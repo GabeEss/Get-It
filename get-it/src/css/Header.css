@@ -1,0 +1,30 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.logo-container {
+    display: flex;
+}
+
+.login-container {
+    display: flex;
+}
+
+.searchbar-container form {
+    display: flex;
+    align-items: center;
+}
+  
+.searchbar-container input[type="text"] {
+    width: 200px;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.searchbar-container input[type="text"]:hover {
+    border: 1px solid black;
+}
