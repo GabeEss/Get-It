@@ -1,0 +1,45 @@
+*{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.light-mode {
+    background-color: #d2e0e0f4;
+    color: #333333;
+}
+  
+.light-mode .container {
+    background-color:#ffffff;
+    color: #333333;
+}
+
+.light-mode h3 {
+    color: #333333;
+}
+
+.light-mode p {
+    color: #000000;
+}
+
+.dark-mode {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.dark-mode .container {
+    background-color:#333333;
+    color:#ffffff;
+}
+
+.dark-mode h1 {
+    color: #ffffff;
+}
+
+.dark-mode p {
+    color: #cccccc;
+}

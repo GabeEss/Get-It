@@ -1,13 +1,24 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+    const navigate = useNavigate();
+
+    const handleLoginClick = () => {
+        
+    }
+
+    const handleSignUpClick = () => {
+        navigate("");
+    }
+
     return(
         <div className="login-container">
-            <div id="login">Log-in</div>
+            <button id="login" onClick={handleLoginClick}>Log-in</button>
             <br></br>
-            <div id="signup">Sign-up</div>
+            <button id="signup">Sign-up</button>
             <br></br>
-            <div id="user">User</div>
+            <button id="user">User</button>
         </div>
     )
 }

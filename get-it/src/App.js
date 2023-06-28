@@ -1,4 +1,5 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
+import "./css/App.css";
 import Homepage from "./components/pages/HomePage";
 import { SearchProvider } from "./contexts/SearchContext";
 

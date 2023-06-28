@@ -5,10 +5,10 @@ import "../../css/Header.css";
 
 const Header = () => {
     return(
-        <div className="header">
+        <div className="header container light-mode">
             <div className="logo-container">
-                <div id="logo">Logo</div>
-                <div id="app-name">Application Name</div>
+                <div id="logo">logo</div>
+                <div id="app-name">appname</div>
             </div>
             <Searchbar/>
             <Login/>
