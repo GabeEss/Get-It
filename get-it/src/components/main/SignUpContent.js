@@ -1,4 +1,9 @@
 import React, {useState} from "react";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    GoogleAuthProvider, signInWithPopup, linkWithPopup, signOut } from "firebase/auth";
+import {auth, provider} from "../../firebase.js";
+
+// SIGN UP FORM
 
 const SignUp = () => {
     const [username, setUsername] = useState("");
@@ -20,16 +25,24 @@ const SignUp = () => {
             setConfirm(false);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmitCreate = (event) => {
         event.preventDefault();
-        if(confirm) {
-
+        if (confirm) {
+          createUserWithEmailAndPassword(auth, username, password)
+            .then((userCredential) => {
+              const user = userCredential.user;
+              console.log("Sign-up successful:", user);
+            })
+            .catch((error) => {
+              console.error("Error signing up:", error);
+            });
         }
-    }
+      };
 
     return(
         <div className="signupcontent">
-            <form onSubmit={handleSubmit}>
+            <SignUpGoogle/>
+            <form onSubmit={handleSubmitCreate}>
                 <input
                 type="email"
                 value={username}
@@ -60,6 +73,38 @@ const SignUp = () => {
     )
 }
 
+// SIGN UP GOOGLE
+
+const SignUpGoogle = () => {
+    const handleSignUpWithGoogle = () => {
+    signInWithPopup(auth, provider)
+        .then((result) => {
+        // const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+    
+        // Link the Google account with the existing user account
+        linkWithPopup(user, provider)
+        .then((result) => {
+            // Account linking successful
+            console.log("Google account linked successfully:", result.user);
+        })
+        .catch((error) => {
+            // Account linking failed
+            console.error("Error linking Google account:", error);
+        });
+    })
+    .catch((error) => {
+        console.error("Error signing up with Google:", error);
+    });
+    };
+
+    return(
+    <button className="google" onClick={handleSignUpWithGoogle}>Sign up with Google</button>
+    )
+}
+
+// SIGN IN
+
 const SignIn = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -72,13 +117,22 @@ const SignIn = () => {
         setPassword(event.target.value);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmitLogin = (event) => {
         event.preventDefault();
-    }
+        signInWithEmailAndPassword(auth, username, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log("Sign-in successful:", user);
+        })
+        .catch((error) => {
+            console.error("Error signing in:", error);
+        });
+    };
 
     return(
-        <div className="signupcontent">
-            <form onSubmit={handleSubmit}>
+        <div className="signincontent">
+            <SignInGoogle/>
+            <form onSubmit={handleSubmitLogin}>
                 <input
                 type="email"
                 value={username}
@@ -99,7 +153,45 @@ const SignIn = () => {
             </form>
         </div>
     )
-
 }
 
-export {SignUp, SignIn};
+// SIGN IN GOOGLE
+
+const SignInGoogle = () => {
+    const handleSignInWithGoogle = () => {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            // const credential = GoogleAuthProvider.credentialFromResult(result);
+            const user = result.user;
+            console.log("Google sign-in successful:", user);
+          })
+          .catch((error) => {
+            console.error("Error signing in with Google:", error);
+          });
+      };
+
+      return(
+        <button className="google" onClick={handleSignInWithGoogle}>Sign in with Google</button>
+      )
+}
+
+//  SIGN OUT
+
+const SignOut = () => {
+    const handleSignOut = () => {
+      signOut(auth)
+        .then(() => {
+          console.log("Sign-out successful");
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+        });
+    };
+  
+    return (
+      <button onClick={handleSignOut}>Sign Out</button>
+    );
+};
+  
+
+export {SignUp, SignIn, SignUpGoogle, SignInGoogle, SignOut};
