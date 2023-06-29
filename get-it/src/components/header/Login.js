@@ -1,15 +1,17 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useContext} from "react";
+import { LoginContext } from "../../contexts/LoginScreenContext";
+import { SignUpContext } from "../../contexts/SignUpScreenContext";
 
 const Login = () => {
-    const navigate = useNavigate();
+    const {setLogin} = useContext(LoginContext);
+    const {setSignUp} = useContext(SignUpContext);
 
     const handleLoginClick = () => {
-        
+        setLogin(true);
     }
 
     const handleSignUpClick = () => {
-        navigate("/SignUp");
+        setSignUp(true);
     }
 
     return(

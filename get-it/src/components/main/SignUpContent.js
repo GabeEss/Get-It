@@ -1,7 +1,8 @@
-import React, {useState} from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword,
-    GoogleAuthProvider, signInWithPopup, linkWithPopup, signOut } from "firebase/auth";
+import React, {useState, useContext} from "react";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, 
+    signInWithPopup, linkWithPopup } from "firebase/auth";
 import {auth, provider} from "../../firebase.js";
+import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
 
 // SIGN UP FORM
 
@@ -9,6 +10,7 @@ const SignUp = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState(false);
+    const {setSignUp} = useContext(SignUpContext);
 
     const handleChange = (event) => {
         setUsername(event.target.value);
@@ -32,6 +34,7 @@ const SignUp = () => {
             .then((userCredential) => {
               const user = userCredential.user;
               console.log("Sign-up successful:", user);
+              onClose();
             })
             .catch((error) => {
               console.error("Error signing up:", error);
@@ -39,8 +42,13 @@ const SignUp = () => {
         }
       };
 
+    const onClose = () => {
+        setSignUp(false);
+    }
+
     return(
         <div className="signupcontent">
+            <h2>Sign Up</h2>
             <SignUpGoogle/>
             <form onSubmit={handleSubmitCreate}>
                 <input
@@ -68,6 +76,7 @@ const SignUp = () => {
                 className="login-field"
                 />
                 <button type="submit" className="submit-button">Submit</button>
+                <button onClick={onClose}>Close</button>
             </form>
         </div>
     )
@@ -102,96 +111,6 @@ const SignUpGoogle = () => {
     <button className="google" onClick={handleSignUpWithGoogle}>Sign up with Google</button>
     )
 }
-
-// SIGN IN
-
-const SignIn = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleChange = (event) => {
-        setUsername(event.target.value);
-    };
-
-    const handleChangePassword = (event) => {
-        setPassword(event.target.value);
-    };
-
-    const handleSubmitLogin = (event) => {
-        event.preventDefault();
-        signInWithEmailAndPassword(auth, username, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            console.log("Sign-in successful:", user);
-        })
-        .catch((error) => {
-            console.error("Error signing in:", error);
-        });
-    };
-
-    return(
-        <div className="signincontent">
-            <SignInGoogle/>
-            <form onSubmit={handleSubmitLogin}>
-                <input
-                type="email"
-                value={username}
-                onChange={handleChange}
-                placeholder="Email"
-                required
-                className="login-field"
-                />
-                <input
-                type="password"
-                value={password}
-                onChange={handleChangePassword}
-                placeholder="Password"
-                required
-                className="login-field"
-                />
-                <button type="submit" className="submit-button">Submit</button>
-            </form>
-        </div>
-    )
-}
-
-// SIGN IN GOOGLE
-
-const SignInGoogle = () => {
-    const handleSignInWithGoogle = () => {
-        signInWithPopup(auth, provider)
-          .then((result) => {
-            // const credential = GoogleAuthProvider.credentialFromResult(result);
-            const user = result.user;
-            console.log("Google sign-in successful:", user);
-          })
-          .catch((error) => {
-            console.error("Error signing in with Google:", error);
-          });
-      };
-
-      return(
-        <button className="google" onClick={handleSignInWithGoogle}>Sign in with Google</button>
-      )
-}
-
-//  SIGN OUT
-
-const SignOut = () => {
-    const handleSignOut = () => {
-      signOut(auth)
-        .then(() => {
-          console.log("Sign-out successful");
-        })
-        .catch((error) => {
-          console.error("Error signing out:", error);
-        });
-    };
-  
-    return (
-      <button onClick={handleSignOut}>Sign Out</button>
-    );
-};
   
 
-export {SignUp, SignIn, SignUpGoogle, SignInGoogle, SignOut};
+export default SignUp;
