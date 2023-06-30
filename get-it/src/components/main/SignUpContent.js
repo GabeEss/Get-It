@@ -80,6 +80,7 @@ const SignUp = () => {
                   })
                   .catch((error) => {
                     console.error("Error signing up:", error);
+                    setErrorMessage("Error signing up. Your password should have at least 6 characters and a number.");
                   });
               }
             })
@@ -117,7 +118,6 @@ const SignUp = () => {
                 />
                 <input
                 type="password"
-                value={password}
                 onChange={handlePasswordConfirm}
                 placeholder="Confirm Password"
                 required

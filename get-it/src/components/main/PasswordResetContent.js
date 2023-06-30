@@ -1,38 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase.js";
+import { auth, db } from "../../firebase.js";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 
 const PasswordReset = () => {
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const {setReset} = useContext(ResetPasswordContext);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
 
-  const handleResetPasswordClick = () => {
-    // getUserByEmail(auth, email)
-    //   .then((user) => {
-    //     if (user) {
-    //       sendPasswordResetEmail(auth, email)
-    //         .then(() => {
-    //           console.log("Password reset email sent.");
-    //           setErrorMessage("Password reset email sent.");
-    //         })
-    //         .catch((error) => {
-    //           console.error("Error sending password reset email:", error);
-    //           setErrorMessage("Error sending password reset email.");
-    //         });
-    //     } else {
-    //       console.error("Invalid email address.");
-    //       setErrorMessage("Invalid email address.");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error getting user by email:", error);
-    //     setErrorMessage("Error getting user by email.");
-    //   });
-  };
+  const handleResetPasswordClick = async () => {
+    const userQuery = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(userQuery);
+    
+    console.log(querySnapshot);
+
+    // If the snapshot isn't empty, the email address is not in the database.
+    if (!querySnapshot.empty) {
+    sendPasswordResetEmail(auth, email)
+        .then(() => {
+            console.log("Password reset email sent.");
+            setErrorMessage("Password reset email sent.");
+            setReset(false);
+        })
+        .catch((error) => {
+            console.error("Error sending password reset email:", error);
+            setErrorMessage("Error sending password reset email.");
+            setReset(false);
+        });
+    } else {
+        console.error("Invalid email address.");
+        setErrorMessage("Invalid email address.");
+        setReset(false);
+    }
+};
 
   return (
     <div className="passwordreset popup">

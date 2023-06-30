@@ -27,6 +27,7 @@ const SignIn = () => {
           .then((userCredential) => {
             const user = userCredential.user;
             console.log("Sign-in successful:", user);
+            onClose();
           })
           .catch((error) => {
             // const errorCode = error.code;
@@ -87,6 +88,7 @@ const SignInGoogle = ({ setLogin }) => {
         }
       };
 
+    // This signs the user in if they are using google, but it also can create a new user.
     const handleSignInWithGoogle = () => {
       signInWithPopup(auth, provider)
         .then(async (result) => {
@@ -98,6 +100,7 @@ const SignInGoogle = ({ setLogin }) => {
                 const userQuery = query(collection(db, "users"), where("email", "==", user.email));
                 const querySnapshot = await getDocs(userQuery);
   
+                // If the snapshot isn't empty, then nothing happens, the user should be logged in already.
                 if (querySnapshot.empty) {
                   // User document doesn't exist, create a new one
                   const userData = {
