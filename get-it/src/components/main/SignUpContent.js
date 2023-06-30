@@ -1,14 +1,18 @@
 import React, {useState, useContext} from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, 
-    signInWithPopup, linkWithPopup } from "firebase/auth";
+    signInWithPopup, linkWithPopup, fetchSignInMethodsForEmail,
+    signInWithEmailAndPassword } from "firebase/auth";
 import {auth, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
+import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { db } from "../../firebase.js";
 
 // SIGN UP FORM
 
 const SignUp = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const [confirm, setConfirm] = useState(false);
     const {setSignUp} = useContext(SignUpContext);
 
@@ -27,17 +31,61 @@ const SignUp = () => {
             setConfirm(false);
     }
 
-    const handleSubmitCreate = (event) => {
+    const createUserDocument = async (userData) => {
+        try {
+          const docRef = await addDoc(collection(db, "users"), userData);
+          console.log("User document created with ID:", docRef.id);
+        } catch (error) {
+          console.error("Error storing user data:", error);
+        }
+      };
+
+      const handleSubmitCreate = (event) => {
         event.preventDefault();
         if (confirm) {
-          createUserWithEmailAndPassword(auth, username, password)
-            .then((userCredential) => {
-              const user = userCredential.user;
-              console.log("Sign-up successful:", user);
-              onClose();
+          // Check if the user already has an account
+          fetchSignInMethodsForEmail(auth, username)
+            .then(async (signInMethods) => {
+              if (signInMethods.length > 0) {
+                // User already has an account, log them in
+                signInWithEmailAndPassword(auth, username, password)
+                  .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log("Sign-in successful:", user);
+                    onClose();
+                  })
+                  .catch((error) => {
+                    console.error("Error signing in:", error);
+                  });
+              } else {
+                // User doesn't have an account, create a new one
+                createUserWithEmailAndPassword(auth, username, password)
+                  .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    console.log("Sign-up successful:", user);
+    
+                    // Check if the user document already exists in Firestore
+                    const userQuery = query(collection(db, "users"), where("email", "==", username));
+                    const querySnapshot = await getDocs(userQuery);
+    
+                    if (querySnapshot.empty) {
+                      // User document doesn't exist, create a new one
+                      const userData = {
+                        email: username,
+                      };
+                      await createUserDocument(userData);
+                    }
+    
+                    onClose();
+                  })
+                  .catch((error) => {
+                    console.error("Error signing up:", error);
+                  });
+              }
             })
             .catch((error) => {
-              console.error("Error signing up:", error);
+              console.error("Error checking email:", error);
+              onClose();
             });
         }
       };
@@ -47,9 +95,9 @@ const SignUp = () => {
     }
 
     return(
-        <div className="signupcontent">
+        <div className="signupcontent popup">
             <h2>Sign Up</h2>
-            <SignUpGoogle/>
+            <SignUpGoogle setSignUp={setSignUp}/>
             <form onSubmit={handleSubmitCreate}>
                 <input
                 type="email"
@@ -78,39 +126,57 @@ const SignUp = () => {
                 <button type="submit" className="submit-button">Submit</button>
                 <button onClick={onClose}>Close</button>
             </form>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
     )
 }
 
 // SIGN UP GOOGLE
 
-const SignUpGoogle = () => {
+const SignUpGoogle = ({ setSignUp }) => {
+    const createUserDocument = async (userData) => {
+        try {
+          const docRef = await addDoc(collection(db, "users"), userData);
+          console.log("User document created with ID:", docRef.id);
+        } catch (error) {
+          console.error("Error storing user data:", error);
+        }
+      };
+
     const handleSignUpWithGoogle = () => {
-    signInWithPopup(auth, provider)
-        .then((result) => {
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        const user = result.user;
-    
-        // Link the Google account with the existing user account
-        linkWithPopup(user, provider)
-        .then((result) => {
-            // Account linking successful
-            console.log("Google account linked successfully:", result.user);
+      signInWithPopup(auth, provider)
+        .then(async (result) => {
+          const user = result.user;
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          // Check if sign in object has google credential
+          if (credential) {
+                // Check if the user document already exists in Firestore
+                const userQuery = query(collection(db, "users"), where("email", "==", user.email));
+                const querySnapshot = await getDocs(userQuery);
+  
+                if (querySnapshot.empty) {
+                  // User document doesn't exist, create a new one
+                  const userData = {
+                    email: user.email,
+                  };
+                  await createUserDocument(userData);
+                }
+  
+                setSignUp(false);    
+          } else {
+            throw new Error("Google credential not available");
+          }
         })
         .catch((error) => {
-            // Account linking failed
-            console.error("Error linking Google account:", error);
+          console.error("Error signing up with Google:", error);
+          setSignUp(false);
         });
-    })
-    .catch((error) => {
-        console.error("Error signing up with Google:", error);
-    });
     };
-
-    return(
-    <button className="google" onClick={handleSignUpWithGoogle}>Sign up with Google</button>
+  
+    return (
+      <button className="google" onClick={handleSignUpWithGoogle}>Sign up with Google</button>
     )
-}
+  }
   
 
 export default SignUp;

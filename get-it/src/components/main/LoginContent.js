@@ -1,12 +1,16 @@
 import React, {useState, useContext} from "react";
-import { signInWithEmailAndPassword, GoogleAuthProvider,
-    signInWithPopup, linkWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, 
+    GoogleAuthProvider,  linkWithPopup } from "firebase/auth";
 import { LoginContext } from "../../contexts/LoginScreenContext.js";
-import {auth, provider} from "../../firebase.js";
+import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
+import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import {auth, provider, db} from "../../firebase.js";
 
 const SignIn = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const {setReset} = useContext(ResetPasswordContext);
     const {setLogin} = useContext(LoginContext);
 
     const handleChange = (event) => {
@@ -20,23 +24,31 @@ const SignIn = () => {
     const handleSubmitLogin = (event) => {
         event.preventDefault();
         signInWithEmailAndPassword(auth, username, password)
-        .then((userCredential) => {
+          .then((userCredential) => {
             const user = userCredential.user;
             console.log("Sign-in successful:", user);
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
+            // const errorCode = error.code;
+            // const errorMessage = error.message;
             console.error("Error signing in:", error);
-        });
-    };
+            setErrorMessage("Your username or password is incorrect.");
+          });
+      };
 
     const onClose = () => {
         setLogin(false);
     }
 
+    const handlePasswordReset = () => {
+        setReset(true);
+        setLogin(false);
+    }
+
     return(
-        <div className="signincontent">
+        <div className="signincontent popup">
             <h2>Sign In</h2>
-            <SignInGoogle/>
+            <SignInGoogle setLogin={setLogin}/>
             <form onSubmit={handleSubmitLogin}>
                 <input
                 type="email"
@@ -55,30 +67,58 @@ const SignIn = () => {
                 className="login-field"
                 />
                 <button type="submit" className="submit-button">Submit</button>
+                <button onClick={handlePasswordReset}>Reset Password</button>
                 <button onClick={onClose}>Close</button>
             </form>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
     )
 }
 
 // SIGN IN GOOGLE
 
-const SignInGoogle = () => {
-    const handleSignInWithGoogle = () => {
-        signInWithPopup(auth, provider)
-          .then((result) => {
-            // const credential = GoogleAuthProvider.credentialFromResult(result);
-            const user = result.user;
-            console.log("Google sign-in successful:", user);
-          })
-          .catch((error) => {
-            console.error("Error signing in with Google:", error);
-          });
+const SignInGoogle = ({ setLogin }) => {
+    const createUserDocument = async (userData) => {
+        try {
+          const docRef = await addDoc(collection(db, "users"), userData);
+          console.log("User document created with ID:", docRef.id);
+        } catch (error) {
+          console.error("Error storing user data:", error);
+        }
       };
 
-      return(
-        <button className="google" onClick={handleSignInWithGoogle}>Sign in with Google</button>
-      )
-}
+    const handleSignInWithGoogle = () => {
+      signInWithPopup(auth, provider)
+        .then(async (result) => {
+          const user = result.user;
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          // Check if sign in object has google credential
+          if (credential) {
+                // Check if the user document already exists in Firestore
+                const userQuery = query(collection(db, "users"), where("email", "==", user.email));
+                const querySnapshot = await getDocs(userQuery);
+  
+                if (querySnapshot.empty) {
+                  // User document doesn't exist, create a new one
+                  const userData = {
+                    email: user.email,
+                  };
+                  await createUserDocument(userData);
+                }
+                setLogin(false);    
+          } else {
+            throw new Error("Google credential not available");
+          }
+        })
+        .catch((error) => {
+          console.error("Error signing up with Google:", error);
+          setLogin(false);
+        });
+    };
+  
+    return (
+      <button className="google" onClick={handleSignInWithGoogle}>Sign up with Google</button>
+    )
+  }
 
 export default SignIn;

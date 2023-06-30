@@ -25,5 +25,5 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth(app);
 
 export default app;
-export const db = getFirestore(app); // firestore
-export {provider, auth}; // authentication
+export const db = getFirestore(app); // firestore database
+export {provider, auth}; // authentication and authentication provider

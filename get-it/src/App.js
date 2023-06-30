@@ -4,17 +4,20 @@ import Homepage from "./components/pages/HomePage";
 import { SearchProvider } from "./contexts/SearchContext";
 import { SignUpProvider } from "./contexts/SignUpScreenContext";
 import { LoginProvider } from "./contexts/LoginScreenContext";
+import { ResetPasswordProvider } from "./contexts/ResetPasswordContext";
 
 function App() {
   return (
     <HashRouter>
       <LoginProvider>
         <SignUpProvider>
-          <SearchProvider>
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-            </Routes>
-          </SearchProvider>
+          <ResetPasswordProvider>
+            <SearchProvider>
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+              </Routes>
+            </SearchProvider>
+          </ResetPasswordProvider>
         </SignUpProvider>
       </LoginProvider>
     </HashRouter>
