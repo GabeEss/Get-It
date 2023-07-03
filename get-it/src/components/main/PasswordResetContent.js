@@ -16,8 +16,6 @@ const PasswordReset = () => {
   const handleResetPasswordClick = async () => {
     const userQuery = query(collection(db, "users"), where("email", "==", email));
     const querySnapshot = await getDocs(userQuery);
-    
-    console.log(querySnapshot);
 
     // If the snapshot isn't empty, the email address is not in the database.
     if (!querySnapshot.empty) {
@@ -30,14 +28,16 @@ const PasswordReset = () => {
         .catch((error) => {
             console.error("Error sending password reset email:", error);
             setErrorMessage("Error sending password reset email.");
-            setReset(false);
         });
     } else {
         console.error("Invalid email address.");
         setErrorMessage("Invalid email address.");
-        setReset(false);
     }
 };
+
+const onClose = () => {
+    setReset(false);
+}
 
   return (
     <div className="passwordreset popup">
@@ -52,6 +52,7 @@ const PasswordReset = () => {
       <button onClick={handleResetPasswordClick} className="password-reset">
         Reset Password
       </button>
+      <button onClick={onClose}>Close</button>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>
   );

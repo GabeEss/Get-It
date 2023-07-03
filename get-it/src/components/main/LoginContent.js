@@ -1,6 +1,6 @@
 import React, {useState, useContext} from "react";
 import { signInWithEmailAndPassword, signInWithPopup, 
-    GoogleAuthProvider,  linkWithPopup } from "firebase/auth";
+    GoogleAuthProvider } from "firebase/auth";
 import { LoginContext } from "../../contexts/LoginScreenContext.js";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 import { collection, getDocs, query, where, addDoc } from "firebase/firestore";

@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
 import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
+import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { onAuthStateChanged } from "firebase/auth";
 import {auth} from "../../firebase.js";
 import SignOut from "../main/SignOutContent";
@@ -8,6 +9,7 @@ import SignOut from "../main/SignOutContent";
 const Login = () => {
     const {setLogin} = useContext(LoginContext);
     const {setSignUp} = useContext(SignUpContext);
+    const {setReset} = useContext(ResetPasswordContext);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -29,11 +31,13 @@ const Login = () => {
 
     const handleLoginClick = () => {
         setSignUp(false);
+        setReset(false);
         setLogin(true);
     }
 
     const handleSignUpClick = () => {
         setLogin(false);
+        setReset(false);
         setSignUp(true);
     }
 
