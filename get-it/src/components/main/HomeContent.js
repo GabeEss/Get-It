@@ -21,7 +21,7 @@ const HomeContent = () => {
         if (container) {
           return container.getAttribute("data-page");
         }
-        return "home"; // If nothing is found, return the home attribute
+        return "home"; // If nothing is found, return the home attribute.
     };
 
     const currentPage = getCurrentPage();
