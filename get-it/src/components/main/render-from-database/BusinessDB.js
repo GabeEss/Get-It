@@ -3,11 +3,11 @@ import { createPost, addComment, updateCommentLikes, updateLikes } from "../../.
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { db, auth } from "../../../firebase";
 import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import DisplayPosts from "./DisplayPosts";
 
 const BusinessDB = () => {
     const page = "business";
     const [newPost, setPost] = useState(false);
-    const [posts, setPosts] = useState("");
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -83,40 +83,13 @@ const BusinessDB = () => {
         )
     }
 
-    const displayPosts = async () => {
-        // try {
-        //     const querySnapshot = await getDocs(collection(db, `${page}Posts`));
-        //     const postData = querySnapshot.docs.map((doc) => ({
-        //         ...doc.data(),
-        //         id: doc.id,
-        //     }));
-        //     setPosts(postData);
-        //   } catch (error) {
-        //     console.error("Error fetching posts: ", error);
-        //   }
-        // return(
-        //     <div>
-        //         <ol className="post-list">
-        //           {posts.map((postItem, index) => (
-        //             <li className="post-item" key={postItem.id}>
-        //               <h3 className="post-title">{postItem.title}</h3>
-        //               <p className="post-owner">Original poster: {postItem.owner}</p>
-        //               <p className="post-time">Time of post: {postItem.time}</p>
-        //               <p className="post-content">{postItem.content}</p>
-        //             </li>
-        //           ))}
-        //         </ol>
-        //     </div>
-        // )
-    }
+    
 
     return(
         <div>
-            {/* {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null} */}
-            {/* {newPost ? newPostForm() : null}
-            <div className="posts-container">
-                {displayPosts()}
-            </div> */}
+            {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null}
+            {newPost ? newPostForm() : null}
+            <DisplayPosts page={page}/>
         </div>
     )
 }
