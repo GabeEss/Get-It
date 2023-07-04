@@ -1,9 +1,10 @@
 import { db } from "../../firebase.js";
 import { collection, addDoc } from "firebase/firestore";
 
-async function createPost(title, content, page, time) {
+async function createPost(owner, title, content, page, time) {
     const post = {
       title: title,
+      owner: owner,
       content: content,
       likes: 0,
       comments: [],

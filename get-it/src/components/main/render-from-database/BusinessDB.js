@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { createPost, addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, currentUser } from "firebase/auth";
 import { db, auth } from "../../firebase.js";
 import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 
@@ -38,9 +38,15 @@ const BusinessDB = () => {
         setContent(event.target.value);
     };
 
-    const handleCreatePost = () => {
+    const handleCreatePost = async () => {
         const time = serverTimestamp();
-        createPost(title, content, page, time);
+        const owner = currentUser.email;
+        const postID = await createPost(owner, title, content, page, time);
+
+        // Create a reference to the user's subcollection
+        const userPostsRef = collection(db, "users", owner, "posts");
+        // Add the post to the user's subcollection
+        await addDoc(userPostsRef, { postID });
     }
 
     const newPostForm = () => {
