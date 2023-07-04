@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from "react";
 import { createPost, addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase.js";
+import { db, auth } from "../../firebase.js";
+import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 
 const BusinessDB = () => {
     const page = "business";
     const [newPost, setPost] = useState(false);
+    const [posts, setPosts] = useState("");
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,6 +25,8 @@ const BusinessDB = () => {
     }
 
     const onClose = () => {
+        setTitle("");
+        setContent("");
         setPost(false);
     }
 
@@ -35,7 +39,8 @@ const BusinessDB = () => {
     };
 
     const handleCreatePost = () => {
-        createPost(title, content, page);
+        const time = serverTimestamp();
+        createPost(title, content, page, time);
     }
 
     const newPostForm = () => {
@@ -68,9 +73,29 @@ const BusinessDB = () => {
         )
     }
 
-    const displayPosts = () => {
+    const displayPosts = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, `${page}Posts`));
+            const postData = querySnapshot.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            setPosts(postData);
+          } catch (error) {
+            console.error("Error fetching posts: ", error);
+          }
         return(
-            <div></div>
+            <div>
+                <ol className="post-list">
+                  {posts.map((postItem, index) => (
+                    <li className="post-item" key={postItem.id}>
+                      <h3 className="post-title">{postItem.title}</h3>
+                      <p className="post-time">Time: {postItem.time}</p>
+                      <p className="post-content">{postItem.content}</p>
+                    </li>
+                  ))}
+                </ol>
+            </div>
         )
     }
 

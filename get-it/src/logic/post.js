@@ -1,13 +1,14 @@
 import { db } from "../../firebase.js";
 import { collection, addDoc } from "firebase/firestore";
 
-async function createPost(title, content, page) {
+async function createPost(title, content, page, time) {
     const post = {
       title: title,
       content: content,
       likes: 0,
       comments: [],
-      page: page
+      page: page,
+      time: time
     };
 
     try {
@@ -34,10 +35,11 @@ function updateLikes(page, postId, newLikes) {
       });
   }
 
-  async function addComment(page, postId, content) {
+  async function addComment(page, postId, content, time) {
     const comment = {
       content: content,
       likes: 0,
+      time: time,
     };
   
     // Get a reference to the post
