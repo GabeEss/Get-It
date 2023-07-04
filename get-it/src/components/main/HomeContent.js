@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
@@ -14,17 +14,21 @@ const HomeContent = () => {
     const {login} = useContext(LoginContext); // if user clicked login, show component
     const {signup} = useContext(SignUpContext); // if user clicked signup, show component
     const {reset} = useContext(ResetPasswordContext); // if user clicked reset password, show component
+    const [currentPage, setCurrentPage] = useState("home");
 
-    // Get the current page from the attributes of the homepage container.
-    const getCurrentPage = () => {
-        const container = document.querySelector(".homepage");
-        if (container) {
-          return container.getAttribute("data-page");
-        }
-        return "home"; // If nothing is found, return the home attribute.
-    };
-
-    const currentPage = getCurrentPage();
+    // Renders on load
+    useEffect(() => {
+        const getCurrentPage = () => {
+          const container = document.querySelector(".homepage");
+          if (container) {
+            return container.getAttribute("data-page");
+          }
+          return "home";
+        };
+    
+        const page = getCurrentPage();
+        setCurrentPage(page);
+      }, []);
 
     const renderContent = () => {
         switch (currentPage) {
@@ -40,6 +44,10 @@ const HomeContent = () => {
                 return <HomeDB/>;
         }
     };
+
+    useEffect(() => {
+        renderContent();
+      }, []);
 
     return(
         <div className="home-main">
