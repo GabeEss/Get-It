@@ -105,6 +105,7 @@ const SignInGoogle = ({ setLogin }) => {
                   // User document doesn't exist, create a new one
                   const userData = {
                     email: user.email,
+                    nickname: user.displayName,
                   };
                   await createUserDocument(userData);
                 }

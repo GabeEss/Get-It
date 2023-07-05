@@ -1,6 +1,6 @@
 import React, {useState, useContext} from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, 
-    signInWithPopup, linkWithPopup, fetchSignInMethodsForEmail,
+    signInWithPopup, fetchSignInMethodsForEmail,
     signInWithEmailAndPassword } from "firebase/auth";
 import {auth, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
@@ -12,6 +12,7 @@ import { db } from "../../firebase.js";
 const SignUp = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [nickname, setNickname] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [confirm, setConfirm] = useState(false);
     const {setSignUp} = useContext(SignUpContext);
@@ -22,6 +23,10 @@ const SignUp = () => {
 
     const handleChangePassword = (event) => {
         setPassword(event.target.value);
+    };
+
+    const handleChangeNickname = (event) => {
+        setNickname(event.target.value);
     };
 
     const handlePasswordConfirm = (event) => {
@@ -72,6 +77,7 @@ const SignUp = () => {
                       // User document doesn't exist, create a new one
                       const userData = {
                         email: username,
+                        nickname: user.displayName,
                       };
                       await createUserDocument(userData);
                     }
@@ -123,6 +129,14 @@ const SignUp = () => {
                 required
                 className="login-field"
                 />
+                <input
+                type="text"
+                value={nickname}
+                onChange={handleChangeNickname}
+                placeholder="Display Name"
+                required
+                className="login-field"
+                />
                 <button type="submit" className="submit-button">Submit</button>
                 <button onClick={onClose}>Close</button>
             </form>
@@ -158,6 +172,7 @@ const SignUpGoogle = ({ setSignUp }) => {
                   // User document doesn't exist, create a new one
                   const userData = {
                     email: user.email,
+                    nickname: user.displayName,
                   };
                   await createUserDocument(userData);
                 }

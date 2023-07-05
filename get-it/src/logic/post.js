@@ -1,7 +1,7 @@
 import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 
-async function createPost(owner, title, content, page, time) {
+async function createPost(owner, title, content, page, time, nickname) {
     const post = {
       title: title,
       owner: owner,
@@ -9,7 +9,8 @@ async function createPost(owner, title, content, page, time) {
       likes: 0,
       comments: [],
       page: page,
-      time: time
+      time: time,
+      nickname: nickname
     };
 
     try {
@@ -23,7 +24,7 @@ async function createPost(owner, title, content, page, time) {
 
 function updateLikes(page, postId, newLikes) {
     const postRef = db.collection(`${page}Posts`).doc(postId);
-  
+
     // Update the "likes" field of the post document
     postRef.update({
       likes: newLikes

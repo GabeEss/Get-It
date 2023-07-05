@@ -4,8 +4,16 @@ import { useNavigate } from 'react-router-dom';
 const Sidebar = () => {
     const navigate = useNavigate();
 
+    const handleGaming = () => {
+        navigate('/television');
+    }
+
+    const handleTelevision = () => {
+        navigate('/gaming');
+    }
+
     const handleBusiness = () => {
-        navigate('/Business');
+        navigate('/business');
     }
 
     const handleHome = () => {
@@ -25,9 +33,9 @@ const Sidebar = () => {
             </div>
             <div className="topics">
                 <h3 className="sidebar-header">Topics</h3>
-                <div className="sidebar-topic">Gaming</div>
+                <div className="sidebar-topic" onClick={handleGaming}>Gaming</div>
                 <div className="sidebar-topic" onClick={handleBusiness}>Business</div>
-                <div className="sidebar-topic">Television</div>
+                <div className="sidebar-topic" onClick={handleTelevision}>Television</div>
             </div>
         </div>
     )

@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
-import { createPost, addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
+import { createPost, updateLikes } from "../../../logic/post";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { db, auth } from "../../../firebase";
-import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, getDoc, doc, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import DisplayPosts from "./DisplayPosts";
 
 const BusinessDB = () => {
@@ -42,15 +42,29 @@ const BusinessDB = () => {
         const auth = getAuth();
         const user = auth.currentUser;
         const owner = user.email;
+        const nickname = user.displayName;
         const time = serverTimestamp();
         
         if(user) {
-            const postID = await createPost(owner, title, content, page, time);
+
+            const postID = await createPost(owner, title, content, page, time, nickname);
+
+            const post = {
+                title: title,
+                content: content,
+                page: page,
+                time: time,
+                nickname: nickname
+            };
+
             // Create a reference to the user's subcollection
             const userPostsRef = collection(db, "users", owner, "posts");
+        
             // Add the post to the user's subcollection
-            await addDoc(userPostsRef, { postID });
+            await addDoc(userPostsRef, { post });
+            
         }
+        onClose();
     }
 
     const newPostForm = () => {
