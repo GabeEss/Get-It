@@ -7,6 +7,7 @@ import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post
 
 const DisplayPost = () => {
     const [post, setPost] = useState(null);
+    const [likeChange, setLikeChange] = useState(false);
     const { page, id } = useParams();
     const navigate = useNavigate();
 
@@ -30,7 +31,7 @@ const DisplayPost = () => {
         };
     
         fetchPost();
-      }, [page, id]);
+      }, [page, id, likeChange]);
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -57,13 +58,15 @@ const DisplayPost = () => {
         return formattedDate;
       };
 
-    const handleLike = (id, likes) => {
+      const handleLike = (id, likes) => {
         updateLikes(page, id, likes + 1);
-    }
-
-    const handleDislike = (id, likes) => {
+        setLikeChange(!likeChange);
+      };
+    
+      const handleDislike = (id, likes) => {
         updateLikes(page, id, likes - 1);
-    }
+        setLikeChange(!likeChange);
+      };
     
       return (
         <div>
@@ -74,9 +77,17 @@ const DisplayPost = () => {
               <p className="post post-time">Time of post in UTC: {formatTime(post.time)}</p>
               <p className="post post-content">{post.content}</p>
               <p className="post post-likes">
-                <button className="likebutton" onClick={handleLike}>Like</button>
+                <button className="likebutton"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike(id, post.likes);
+                }}>Like</button>
                 {post.likes}
-                <button className="dislikebutton" onClick={handleDislike}>Dislike</button>
+                <button className="dislikebutton"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleDislike(id, post.likes);
+                }}>Dislike</button>
                 </p>
               <button onClick={handleGoBack}>Go Back</button>
             </div>
