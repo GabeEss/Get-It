@@ -23,7 +23,6 @@ const DisplayPost = () => {
               setPost({ id: docSnap.id, ...docSnap.data() });
             } else {
               console.log("No such post exists!");
-              // Handle the case when the post doesn't exist
             }
           } catch (error) {
             console.error("Error fetching post: ", error);
@@ -41,10 +40,10 @@ const DisplayPost = () => {
         // Convert seconds to milliseconds
         const milliseconds = seconds * 1000;
     
-        // Create a JavaScript Date object from milliseconds
+        // Create a Date object from milliseconds
         const dateObj = new Date(milliseconds);
     
-        // Format the date object with the desired display format
+        // Format the date
         const formattedDate = dateObj.toLocaleString("en-US", {
           year: "numeric",
           month: "long",
@@ -58,13 +57,13 @@ const DisplayPost = () => {
         return formattedDate;
       };
 
-      const handleLike = () => {
+    const handleLike = (id, likes) => {
+        updateLikes(page, id, likes + 1);
+    }
 
-      }
-  
-      const handleDislike = () => {
-  
-      }
+    const handleDislike = (id, likes) => {
+        updateLikes(page, id, likes - 1);
+    }
     
       return (
         <div>

@@ -6,6 +6,7 @@ import { updateLikes } from "../../../logic/post";
 
 const DisplayPosts = ({page}) => {
     const [posts, setPosts] = useState([]);
+    const [likeChange, setLikeChange] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +24,7 @@ const DisplayPosts = ({page}) => {
         };
     
         fetchData();
-      }, [page]);
+      }, [page, likeChange]);
 
       const formatTime = ({seconds}) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -33,10 +34,10 @@ const DisplayPosts = ({page}) => {
         // Convert seconds to milliseconds
         const milliseconds = seconds * 1000;
       
-        // Create a JavaScript Date object from milliseconds
+        // Create a Date object from milliseconds
         const dateObj = new Date(milliseconds);
       
-        // Format the date object with the desired display format
+        // Format the date
         const formattedDate = dateObj.toLocaleString("en-US", {
           year: "numeric",
           month: "long",
@@ -54,13 +55,15 @@ const DisplayPosts = ({page}) => {
         navigate(`/${page}/${title}/${id}`);
     }
     
-    const handleLike = () => {
-
-    }
-
-    const handleDislike = () => {
-
-    }
+    const handleLike = (id, likes) => {
+        updateLikes(page, id, likes + 1);
+        setLikeChange(!likeChange);
+      };
+    
+      const handleDislike = (id, likes) => {
+        updateLikes(page, id, likes - 1);
+        setLikeChange(!likeChange);
+      };
 
     return(
         <div>
@@ -77,9 +80,17 @@ const DisplayPosts = ({page}) => {
                                 Time of post in UTC: {formatTime(postItem.time)}
                             </p>
                             <p className="post post-likes">
-                                <button className="likebutton" onClick={handleLike}>Like</button>
+                                <button className="likebutton" 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleLike(postItem.id, postItem.likes);
+                                }}>Like</button>
                                 {postItem.likes}
-                                <button className="dislikebutton" onClick={handleDislike}>Dislike</button>
+                                <button className="dislikebutton"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDislike(postItem.id, postItem.likes);
+                                }}>Dislike</button>
                             </p>
                             <p className="post post-content">{postItem.content}</p>
                         </li>
