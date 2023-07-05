@@ -54,7 +54,7 @@ const DisplayPosts = ({page}) => {
     const handleClick = (title, id) => {
         navigate(`/${page}/${title}/${id}`);
     }
-    
+
     const handleLike = (id, likes) => {
         updateLikes(page, id, likes + 1);
         setLikeChange(!likeChange);
