@@ -98,7 +98,7 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
     likes: newNum,
   })
   .then(() => {
-    console.log('Likes updated successfully');
+    // console.log('Likes updated successfully');
   })
   .catch((error) => {
     console.error('Error updating likes: ', error);

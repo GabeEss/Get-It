@@ -6,7 +6,8 @@ import { updateLikes } from "../../../logic/post";
 
 const DisplayPosts = ({page}) => {
     const [posts, setPosts] = useState([]);
-    const [likeChange, setLikeChange] = useState(false);
+    const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
+    const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -55,53 +56,43 @@ const DisplayPosts = ({page}) => {
         navigate(`/${page}/${title}/${id}`);
     }
 
-    // Need to make it so that if a user has liked a post and they click the like button,
-    // they will unlike the post and push the like number down by 1.
-    // If the user clicks the dislike button from the like button,
-    // this should push the like number down by 2 and vice versa.
-    // This logic will need to be worked out before going into the updateLikes function.
-    // Will need to change the logic in post.js because right now, clicking on like/dislike
-    // will change whether the user has liked the post to true/false. It might be
-    // good to remove the post from the users likes if they unlike/undislike something.
-    // If they like/dislike something it should be added to the collection where dislike
-    // should make the liked value false and like should make the like value true. So
-    // I can probably pass the the like value into the updateLikes function.
-
-
-    const handleLike = (id, likesNum) => {
-        updateLikes(page, id, likesNum, "like");
+    const handleLike = async (id, likesNum) => {
+        setNoClick(true);
+        await updateLikes(page, id, likesNum, "like");
         setLikeChange(!likeChange);
+        setNoClick(false);
       };
     
-      const handleDislike = (id, likesNum) => {
-        updateLikes(page, id, likesNum, "dislike");
+      const handleDislike = async (id, likesNum) => {
+        setNoClick(true);
+        await updateLikes(page, id, likesNum, "dislike");
         setLikeChange(!likeChange);
+        setNoClick(false);
       };
 
     return(
         <div>
             {posts.length === 0 ? (
-                <p>No posts available</p>
+                <p>Loading...</p>
                 ) : (
                     <ol className="post-list">
                     {posts.map((postItem) => (
-                        <li className="post-item" key={postItem.id} 
-                        onClick={() => handleClick(postItem.title, postItem.id)}>
-                            <h3 className="post post-title">{postItem.title}</h3>
+                        <li className="post-item" key={postItem.id}>
+                            <h3 className="post post-title"
+                            onClick={() => handleClick(postItem.title, postItem.id)}
+                            >{postItem.title}</h3>
                             <p className="post post-name">Original poster: {postItem.nickname}</p>
                             <p className="post post-time">
                                 Time of post in UTC: {formatTime(postItem.time)}
                             </p>
                             <p className="post post-likes">
-                                <button className="likebutton" 
-                                onClick={(e) => {
-                                    e.stopPropagation(); // prevents accidentally navigating to the post page
+                                <button className={`likebutton ${noClick ? "disabled" : ""}`}
+                                onClick={() => {
                                     handleLike(postItem.id, postItem.likes);
                                 }}>Like</button>
                                 {postItem.likes}
-                                <button className="dislikebutton"
-                                onClick={(e) => {
-                                    e.stopPropagation();
+                                <button className={`dislikebutton ${noClick ? "disabled" : ""}`}
+                                onClick={() => {
                                     handleDislike(postItem.id, postItem.likes);
                                 }}>Dislike</button>
                             </p>

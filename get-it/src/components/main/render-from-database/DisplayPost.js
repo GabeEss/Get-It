@@ -7,7 +7,8 @@ import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post
 
 const DisplayPost = () => {
     const [post, setPost] = useState(null);
-    const [likeChange, setLikeChange] = useState(false);
+    const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
+    const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const { page, id } = useParams();
     const navigate = useNavigate();
 
@@ -58,14 +59,18 @@ const DisplayPost = () => {
         return formattedDate;
       };
 
-      const handleLike = (id, likes) => {
-        updateLikes(page, id, likes + 1);
+      const handleLike = async (id, likesNum) => {
+        setNoClick(true);
+        await updateLikes(page, id, likesNum, "like");
         setLikeChange(!likeChange);
+        setNoClick(false);
       };
     
-      const handleDislike = (id, likes) => {
-        updateLikes(page, id, likes - 1);
+      const handleDislike = async (id, likesNum) => {
+        setNoClick(true);
+        await updateLikes(page, id, likesNum, "dislike");
         setLikeChange(!likeChange);
+        setNoClick(false);
       };
     
       return (
@@ -77,15 +82,15 @@ const DisplayPost = () => {
               <p className="post post-time">Time of post in UTC: {formatTime(post.time)}</p>
               <p className="post post-content">{post.content}</p>
               <p className="post post-likes">
-                <button className="likebutton"
-                onClick={(e) => {
-                    e.stopPropagation();
+                <button
+                className={`likebutton ${noClick ? "disabled" : ""}`}
+                onClick={() => {
                     handleLike(id, post.likes);
                 }}>Like</button>
                 {post.likes}
-                <button className="dislikebutton"
-                onClick={(e) => {
-                    e.stopPropagation();
+                <button
+                className={`dislikebutton ${noClick ? "disabled" : ""}`}
+                onClick={() => {
                     handleDislike(id, post.likes);
                 }}>Dislike</button>
                 </p>
