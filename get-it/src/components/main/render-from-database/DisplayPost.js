@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../../firebase";
+import { auth, db } from "../../../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 const DisplayPost = () => {
@@ -12,6 +13,24 @@ const DisplayPost = () => {
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const { page, id } = useParams();
     const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in
+            setUser(user);
+        } else {
+            // User is signed out
+            setUser(null);
+        }
+        });
+
+        // Clean up the listener on unmount
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     const handleGoBack = () => {
         navigate(`/${page}`);
@@ -92,13 +111,13 @@ const DisplayPost = () => {
               <p className="post post-content">{post.content}</p>
               <p className="post post-likes">
                 <button
-                className={`likebutton ${noClick ? "disabled" : ""}`}
+                className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                 onClick={() => {
                     handleLike(id, post.likes);
                 }}>Like</button>
                 {post.likes}
                 <button
-                className={`dislikebutton ${noClick ? "disabled" : ""}`}
+                className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                 onClick={() => {
                     handleDislike(id, post.likes);
                 }}>Dislike</button>
@@ -106,7 +125,7 @@ const DisplayPost = () => {
               <button onClick={handleGoBack}>Go Back</button>
               <div className="post comment-area">
                 <textarea
-                  className="comment-textarea"
+                  className={`comment-textarea ${!user ? "disabled" : ""}`}
                   placeholder="Write your comment..."
                   onChange={(e) => handleCommentChange(e.target.value)}
                   value={comment}
