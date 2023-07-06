@@ -16,7 +16,7 @@ const HomeContent = () => {
     const {reset} = useContext(ResetPasswordContext); // if user clicked reset password, show component
     const [currentPage, setCurrentPage] = useState("home");
 
-    // Renders on load
+    // Sets the current page
     useEffect(() => {
         const getCurrentPage = () => {
           const container = document.querySelector(".homepage");

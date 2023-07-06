@@ -47,6 +47,7 @@ const BusinessDB = () => {
         
         if(user) {
 
+            // This will add the post to a collection of all posts related to this page.
             const postID = await createPost(owner, title, content, page, time, nickname);
 
             const post = {
@@ -60,7 +61,7 @@ const BusinessDB = () => {
             // Create a reference to the user's subcollection
             const userPostsRef = collection(db, "users", owner, "posts");
         
-            // Add the post to the user's subcollection
+            // Add the post to the user's subcollection, so they have a history of posts they make
             await addDoc(userPostsRef, { post });
             
         }

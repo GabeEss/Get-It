@@ -55,13 +55,26 @@ const DisplayPosts = ({page}) => {
         navigate(`/${page}/${title}/${id}`);
     }
 
-    const handleLike = (id, likes) => {
-        updateLikes(page, id, likes + 1);
+    // Need to make it so that if a user has liked a post and they click the like button,
+    // they will unlike the post and push the like number down by 1.
+    // If the user clicks the dislike button from the like button,
+    // this should push the like number down by 2 and vice versa.
+    // This logic will need to be worked out before going into the updateLikes function.
+    // Will need to change the logic in post.js because right now, clicking on like/dislike
+    // will change whether the user has liked the post to true/false. It might be
+    // good to remove the post from the users likes if they unlike/undislike something.
+    // If they like/dislike something it should be added to the collection where dislike
+    // should make the liked value false and like should make the like value true. So
+    // I can probably pass the the like value into the updateLikes function.
+
+
+    const handleLike = (id, likesNum) => {
+        updateLikes(page, id, likesNum, "like");
         setLikeChange(!likeChange);
       };
     
-      const handleDislike = (id, likes) => {
-        updateLikes(page, id, likes - 1);
+      const handleDislike = (id, likesNum) => {
+        updateLikes(page, id, likesNum, "dislike");
         setLikeChange(!likeChange);
       };
 
@@ -82,7 +95,7 @@ const DisplayPosts = ({page}) => {
                             <p className="post post-likes">
                                 <button className="likebutton" 
                                 onClick={(e) => {
-                                    e.stopPropagation();
+                                    e.stopPropagation(); // prevents accidentally navigating to the post page
                                     handleLike(postItem.id, postItem.likes);
                                 }}>Like</button>
                                 {postItem.likes}

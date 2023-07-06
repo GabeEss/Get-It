@@ -1,6 +1,6 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
     const post = {
@@ -23,19 +23,9 @@ async function createPost(owner, title, content, page, time, nickname) {
       }
 }
 
-async function updateLikes(page, id, newLikes) {
+async function updateLikes(page, id, numLikes, type) {
+    // Get reference to the post
     const postRef = doc(db, `${page}Posts`, id);
-
-    // Update the "likes" field of the post document
-    await updateDoc(postRef, {
-        likes: newLikes,
-      })
-      .then(() => {
-        console.log('Likes updated successfully');
-      })
-      .catch((error) => {
-        console.error('Error updating likes: ', error);
-      });
 
     // Get reference to the user
     const auth = getAuth();
@@ -48,28 +38,72 @@ async function updateLikes(page, id, newLikes) {
     const querySnapshot = await getDocs(likesCollectionRef);
     // Find the like to the specific post
     const existingLike = querySnapshot.docs.find(doc => doc.data().postId === id);
-
-    // If the user has liked the post before, change the liked value to the opposite value.
     if (existingLike) {
-      // Need to get the doc in the correct format
+      // Get the doc snapshot
       const existingLikeRef = doc(likesCollectionRef, existingLike.id);
       const docSnapshot = await getDoc(existingLikeRef);
+
       if (docSnapshot.exists()) {
         // Get the liked value
-        const likedValue = !docSnapshot.data().liked;
-        console.log("Liked value:", likedValue);
-        // Update the doc
-        await updateDoc(existingLikeRef, { liked: likedValue });
+        const prevlikedValue = docSnapshot.data().type;
+        
+        if(type === "like") {
+            // If the user is changing their like, change the type. Otherwise, remove from like history.
+            if(prevlikedValue === "dislike") {
+              // Update the number of likes in the post. Add a like, remove a dislike.
+              updateNumberOfLikes(postRef, numLikes, 2);
+              // Updaye the user's like value for this post in their like history.
+              await updateDoc(existingLikeRef, { type: type });
+            } else {
+              // Update the number of likes in the post. Remove a like.
+              updateNumberOfLikes(postRef, numLikes, -1);
+              // Delete the like from user history.
+              await deleteDoc(existingLikeRef);
+          }
+        } else if(type === "dislike") {
+            // If the user is changing their like, change the type. Otherwise, remove from like history.
+            if(prevlikedValue === "like") {
+              // Update the number of likes in the post. Add a dislike, remove a like.
+              updateNumberOfLikes(postRef, numLikes, -2);
+              // Updaye the user's like value for this post in their like history.
+              await updateDoc(existingLikeRef, { type: type });
+            } else {
+              // Update the number of likes in the post. Remove a dislike.
+              updateNumberOfLikes(postRef, numLikes, 1);
+              // Delete the like from user history.
+              await deleteDoc(existingLikeRef);
+            }
+        } else console.log("The type of like is not defined.");
       } 
     } else {
-      // Add a new document to the likes collection, if the user has not liked this post before.
       const likeData = {
         postId: id,
-        liked: true,
+        type: type,
       };
+
+      // Update number of likes in the post.
+      if(type === "like") updateNumberOfLikes(postRef, numLikes, 1);
+      else if(type === "dislike") updateNumberOfLikes(postRef, numLikes, -1);
+      else console.log("The type of like is not defined.");
+
+      // Add the like to the user's like history, if the user has not liked this post before.
       await addDoc(likesCollectionRef, likeData);
-  }
-  }
+    }
+}
+
+// Update the number of likes in a post.
+const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
+  const newNum = numLikes + plusMinus;
+  await updateDoc(postRef, {
+    likes: newNum,
+  })
+  .then(() => {
+    console.log('Likes updated successfully');
+  })
+  .catch((error) => {
+    console.error('Error updating likes: ', error);
+  });
+}
 
   async function addComment(page, postId, content, time) {
     const comment = {
