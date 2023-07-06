@@ -1,6 +1,6 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
     const post = {
@@ -44,7 +44,7 @@ async function updateLikes(page, id, numLikes, type) {
       const docSnapshot = await getDoc(existingLikeRef);
 
       if (docSnapshot.exists()) {
-        // Get the liked value
+        // Get the previous liked value (like/dislike)
         const prevlikedValue = docSnapshot.data().type;
         
         if(type === "like") {
@@ -105,7 +105,8 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-  async function addComment(page, postId, content, time) {
+  async function addComment(page, postId, content) {
+    const time = serverTimestamp();
     const comment = {
       content: content,
       likes: 0,
@@ -125,7 +126,6 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
         const updatedComments = [...currentComments, comment];
         // Update the comments in the post
         await postRef.update({ comments: updatedComments });
-    
         console.log('Comment added successfully');
     } catch (error) {
         console.error('Error adding comment: ', error);

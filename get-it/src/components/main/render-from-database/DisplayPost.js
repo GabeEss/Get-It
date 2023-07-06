@@ -7,6 +7,7 @@ import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post
 
 const DisplayPost = () => {
     const [post, setPost] = useState(null);
+    const [comment, setComment] = useState("");
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const { page, id } = useParams();
@@ -72,6 +73,14 @@ const DisplayPost = () => {
         setLikeChange(!likeChange);
         setNoClick(false);
       };
+
+      const handleCommentChange = (str) => {
+        setComment(str);
+      }
+
+      const handleAddComment = (page, id, content) => {
+        // addComment(page, id, content);
+      }
     
       return (
         <div>
@@ -95,6 +104,20 @@ const DisplayPost = () => {
                 }}>Dislike</button>
                 </p>
               <button onClick={handleGoBack}>Go Back</button>
+              <div className="post comment-area">
+                <textarea
+                  className="comment-textarea"
+                  placeholder="Write your comment..."
+                  onChange={(e) => handleCommentChange(e.target.value)}
+                  value={comment}
+                ></textarea>
+                <button onClick={handleAddComment(page, id, comment)}>Add Comment</button>
+                {/* {post.comments.map((comment, index) => (
+                  <p key={index} className="post-comment">
+                    {comment}
+                  </p>
+                ))} */}
+              </div>
             </div>
           ) : (
             <p>Loading post...</p>
