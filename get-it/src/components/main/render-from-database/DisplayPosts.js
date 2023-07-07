@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { updateLikes } from "../../../logic/post";
 import { onAuthStateChanged } from "firebase/auth";
 
-const DisplayPosts = ({page}) => {
+const DisplayPosts = ({page, refreshPosts}) => {
     const [posts, setPosts] = useState([]);
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
@@ -44,7 +44,7 @@ const DisplayPosts = ({page}) => {
         };
     
         fetchData();
-      }, [page, likeChange]);
+      }, [page, likeChange, refreshPosts]);
 
       const formatTime = ({seconds}) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -92,7 +92,7 @@ const DisplayPosts = ({page}) => {
     return(
         <div>
             {posts.length === 0 ? (
-                <p>Loading...</p>
+                <p>Be the first to write a post...</p>
                 ) : (
                     <ol className="post-list">
                     {posts.map((postItem) => (
@@ -100,10 +100,11 @@ const DisplayPosts = ({page}) => {
                             <h3 className="post post-title"
                             onClick={() => handleClick(postItem.title, postItem.id)}
                             >{postItem.title}</h3>
-                            <p className="post post-name">Original poster: {postItem.nickname}</p>
-                            <p className="post post-time">
+                            <h5 className="post post-name">Original poster: {postItem.nickname}</h5>
+                            <h5 className="post post-time">
                                 Time of post in UTC: {formatTime(postItem.time)}
-                            </p>
+                            </h5>
+                            <p className="post post-content">{postItem.content}</p>
                             <p className="post post-likes">
                                 <button className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                                 onClick={() => {
@@ -115,7 +116,6 @@ const DisplayPosts = ({page}) => {
                                     handleDislike(postItem.id, postItem.likes);
                                 }}>Dislike</button>
                             </p>
-                            <p className="post post-content">{postItem.content}</p>
                         </li>
                     ))}
                     </ol>

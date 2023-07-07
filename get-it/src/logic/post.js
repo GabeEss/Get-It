@@ -1,14 +1,14 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
+
     const post = {
       title: title,
       owner: owner,
       content: content,
       likes: 0,
-      comments: [],
       page: page,
       time: time,
       nickname: nickname
@@ -17,7 +17,8 @@ async function createPost(owner, title, content, page, time, nickname) {
     try {
         const postsCollection = collection(db, `${page}Posts`);
         const docRef = await addDoc(postsCollection, post);
-        console.log('Post added with ID: ', docRef.id);
+        // console.log('Post added with ID: ', docRef.id);
+        return docRef.id;
       } catch (error) {
         console.error('Error adding post: ', error);
       }
@@ -105,30 +106,51 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-  async function addComment(page, postId, content) {
-    const time = serverTimestamp();
+  async function addComment(page, postId, content, time) {
+
+    // Get reference to the post
+    const postRef = doc(db, `${page}Posts`, postId);
+
+    // Get reference to the user
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const owner = user.email;
+    const nickname = user.displayName;
+    const userRef = doc(db, "users", owner);
+
+    // The comment data.
     const comment = {
       content: content,
+      nickname: nickname,
+      owner: owner,
+      page: page,
+      postId: postId,
+      time,
       likes: 0,
-      time: time,
-      replies: []
     };
-  
-    // Get a reference to the post
-    const postRef = db.collection(`${page}Posts`).doc(postId);
-  
+
+    // The data to add to the user's comment history.
+    const commentUserData = {
+      content: content,
+      nickname: nickname,
+      page: page,
+      postId: postId,
+      time: time,
+    }
+
     try {
-        // Get the data in the post
-        const postDoc = await postRef.get();
-        // Get the comments
-        const currentComments = postDoc.data().comments || [];
-        // Append the new comment to the existing comments
-        const updatedComments = [...currentComments, comment];
-        // Update the comments in the post
-        await postRef.update({ comments: updatedComments });
-        console.log('Comment added successfully');
+      // Create a new comment document within the "comments" collection of the post
+      const commentsCollectionRef = collection(postRef, "comments");
+      const newCommentRef = await addDoc(commentsCollectionRef, comment);
+      const commentId = newCommentRef.id;
+      console.log('Comment added successfully with ID:', commentId);
+  
+      // Add comment to user's comment history
+      const userCommentsCollectionRef = collection(userRef, "comments");
+      await addDoc(userCommentsCollectionRef, commentUserData);
+      console.log("Comment added to user history.");
     } catch (error) {
-        console.error('Error adding comment: ', error);
+      console.error('Error adding comment: ', error);
     }
   }
   

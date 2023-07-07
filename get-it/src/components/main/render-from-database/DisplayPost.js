@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,10 +8,11 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const DisplayPost = () => {
     const [post, setPost] = useState(null);
+    const [commentData, setCommentData] = useState(null);
     const [comment, setComment] = useState("");
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
-    const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
-    const { page, id } = useParams();
+    const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
+    const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
@@ -42,7 +43,8 @@ const DisplayPost = () => {
             const postRef = doc(db, `${page}Posts`, id);
             const docSnap = await getDoc(postRef);
             if (docSnap.exists()) {
-              setPost({ id: docSnap.id, ...docSnap.data() });
+              await setPost({ id: docSnap.id, ...docSnap.data() });
+              handleCommentData();
             } else {
               console.log("No such post exists!");
             }
@@ -97,9 +99,22 @@ const DisplayPost = () => {
         setComment(str);
       }
 
-      const handleAddComment = (page, id, content) => {
-        // addComment(page, id, content);
+      const handleAddComment = async (page, id, content) => {
+        const time = serverTimestamp();
+        await addComment(page, id, content, time);
+        setComment("");
       }
+
+      const handleCommentData = async () => {
+        const postRef = doc(db, `${page}Posts`, id);
+        const commentsCollectionRef = collection(postRef, "comments");
+
+        // Retrieve comments for the post
+        const querySnapshot = await getDocs(commentsCollectionRef);
+        const comments = querySnapshot.docs.map((doc) => doc.data());
+        setCommentData(comments);
+      }
+
     
       return (
         <div>
@@ -118,24 +133,35 @@ const DisplayPost = () => {
                 {post.likes}
                 <button
                 className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                onClick={() => {
-                    handleDislike(id, post.likes);
-                }}>Dislike</button>
-                </p>
+                onClick={() => { handleDislike(id, post.likes);}}
+                >Dislike</button>
+              </p>
               <button onClick={handleGoBack}>Go Back</button>
               <div className="post comment-area">
-                <textarea
-                  className={`comment-textarea ${!user ? "disabled" : ""}`}
-                  placeholder="Write your comment..."
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  value={comment}
-                ></textarea>
-                <button onClick={handleAddComment(page, id, comment)}>Add Comment</button>
-                {/* {post.comments.map((comment, index) => (
-                  <p key={index} className="post-comment">
-                    {comment}
-                  </p>
-                ))} */}
+                  <textarea
+                    className={`comment-textarea ${!user ? "disabled" : ""}`}
+                    placeholder="Write your comment..."
+                    onChange={(e) => handleCommentChange(e.target.value)}
+                    value={comment}
+                  ></textarea>
+                  <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
+                  {commentData ? commentData.map((comment, index) => (
+                      <div key={index} className="post comment-content">
+                        <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
+                        {comment.content}
+                        <button
+                          className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                          onClick={() => {
+                              // handleLike(id, comment.likes);
+                          }}>Like</button>
+                          {comment.likes}
+                          <button
+                          className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                          onClick={() => {
+                              // handleDislike(id, comment.likes);
+                          }}>Dislike</button>
+                      </div>
+                  )) : ""}
               </div>
             </div>
           ) : (

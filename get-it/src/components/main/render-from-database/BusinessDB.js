@@ -10,6 +10,7 @@ const BusinessDB = () => {
     const [newPost, setPost] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [refreshPosts, setRefresh] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
@@ -28,6 +29,7 @@ const BusinessDB = () => {
         setTitle("");
         setContent("");
         setPost(false);
+        setRefresh(!refreshPosts);
     }
 
     const handleTitleChange = (event) => {
@@ -55,7 +57,8 @@ const BusinessDB = () => {
                 content: content,
                 page: page,
                 time: time,
-                nickname: nickname
+                nickname: nickname,
+                postID: postID
             };
 
             // Create a reference to the user's subcollection
@@ -104,7 +107,7 @@ const BusinessDB = () => {
         <div>
             {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null}
             {newPost ? newPostForm() : null}
-            <DisplayPosts page={page}/>
+            <DisplayPosts page={page} refreshPosts={refreshPosts}/>
         </div>
     )
 }
