@@ -29,21 +29,26 @@ const DisplayPosts = ({page, refreshPosts}) => {
         };
     }, []);
 
+
+    const loadPosts = () => {
+      const fetchData = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, `${page}Posts`));
+          const postData = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+          setPosts(postData);
+        } catch (error) {
+          console.error("Error fetching posts: ", error);
+        }
+      };
+  
+      fetchData();
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const querySnapshot = await getDocs(collection(db, `${page}Posts`));
-            const postData = querySnapshot.docs.map((doc) => ({
-              ...doc.data(),
-              id: doc.id,
-            }));
-            setPosts(postData);
-          } catch (error) {
-            console.error("Error fetching posts: ", error);
-          }
-        };
-    
-        fetchData();
+        loadPosts();
       }, [page, likeChange, refreshPosts]);
 
       const formatTime = ({seconds}) => {
@@ -76,15 +81,17 @@ const DisplayPosts = ({page, refreshPosts}) => {
     }
 
     const handleLike = async (id, likesNum) => {
+        const type = "like";
         setNoClick(true);
-        await updateLikes(page, id, likesNum, "like");
+        await updateLikes(page, id, likesNum, type);
         setLikeChange(!likeChange);
         setNoClick(false);
       };
     
       const handleDislike = async (id, likesNum) => {
+        const type = "dislike";
         setNoClick(true);
-        await updateLikes(page, id, likesNum, "dislike");
+        await updateLikes(page, id, likesNum, type);
         setLikeChange(!likeChange);
         setNoClick(false);
       };

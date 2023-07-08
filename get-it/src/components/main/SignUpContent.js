@@ -176,7 +176,6 @@ const SignUpGoogle = ({ setSignUp }) => {
                   };
                   await createUserDocument(userData);
                 }
-  
                 setSignUp(false);    
           } else {
             throw new Error("Google credential not available");

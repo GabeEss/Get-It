@@ -108,6 +108,7 @@ const SignInGoogle = ({ setLogin }) => {
                     nickname: user.displayName,
                   };
                   await createUserDocument(userData);
+                  setLogin(false);
                 }
                 setLogin(false);    
           } else {

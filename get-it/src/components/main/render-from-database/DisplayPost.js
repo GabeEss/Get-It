@@ -10,6 +10,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const DisplayPost = () => {
     const [post, setPost] = useState(null); // hold the post to be displayed
     const [commentData, setCommentData] = useState(null); // holds the commentData to be displayed
+    const [newCommentRefresh, setRefreshComments] = useState(false); // so that useEffect can refresh when a new comment is made
     const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
@@ -44,7 +45,7 @@ const DisplayPost = () => {
             const postRef = doc(db, `${page}Posts`, id);
             const docSnap = await getDoc(postRef);
             if (docSnap.exists()) {
-              await setPost({ id: docSnap.id, ...docSnap.data() });
+              setPost({ id: docSnap.id, ...docSnap.data() });
               handleCommentData();
             } else {
               console.log("No such post exists!");
@@ -55,7 +56,7 @@ const DisplayPost = () => {
         };
     
         fetchPost();
-      }, [page, id, likeChange, commentData]);
+      }, [page, newCommentRefresh, likeChange]);
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -114,6 +115,7 @@ const DisplayPost = () => {
         const time = serverTimestamp();
         await addComment(page, id, content, time);
         setComment("");
+        setRefreshComments(!newCommentRefresh);
       }
 
       const handleCommentData = async () => {
