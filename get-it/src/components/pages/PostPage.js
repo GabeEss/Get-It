@@ -1,13 +1,13 @@
 import Header from "../header/Header";
 import React from "react";
 import "../../css/HomePage.css";
-import DisplayPost from "../main/render-from-database/DisplayPost";
+import HomeContent from "../main/HomeContent";
 
 const Postpage = () => {
     return(
-        <div className="postpage light-mode" data-page="post">
+        <div className="homepage light-mode" data-page="post">
             <Header/>
-            <DisplayPost/>
+            <HomeContent/>
         </div>
     )
 }

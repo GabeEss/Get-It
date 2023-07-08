@@ -9,6 +9,7 @@ import BusinessDB from "./render-from-database/BusinessDB";
 import GamingDB from "./render-from-database/GamingDB";
 import HomeDB from "./render-from-database/HomeDB";
 import TelevisionDB from "./render-from-database/TelevisionDB";
+import DisplayPost from "./render-from-database/DisplayPost";
 
 const HomeContent = () => {
     const {login} = useContext(LoginContext); // if user clicked login, show component
@@ -38,6 +39,8 @@ const HomeContent = () => {
                 return <GamingDB />;
             case "television":
                 return <TelevisionDB />;
+            case "post":
+                return <DisplayPost/>
             case "home":
                 return <HomeDB/>
             default:

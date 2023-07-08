@@ -5,11 +5,11 @@ const Sidebar = () => {
     const navigate = useNavigate();
 
     const handleGaming = () => {
-        navigate('/television');
+        navigate('/gaming');
     }
 
     const handleTelevision = () => {
-        navigate('/gaming');
+        navigate('/television');
     }
 
     const handleBusiness = () => {

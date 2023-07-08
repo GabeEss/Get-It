@@ -27,7 +27,6 @@ async function createPost(owner, title, content, page, time, nickname) {
 async function updateLikes(page, id, numLikes, type) {
     // Get reference to the post
     const postRef = doc(db, `${page}Posts`, id);
-
     // Get reference to the user
     const auth = getAuth();
     const user = auth.currentUser;
@@ -37,6 +36,7 @@ async function updateLikes(page, id, numLikes, type) {
     // Get likes collection, find if user has liked the post before
     const likesCollectionRef = collection(userRef, "likes");
     const querySnapshot = await getDocs(likesCollectionRef);
+
     // Find the like to the specific post
     const existingLike = querySnapshot.docs.find(doc => doc.data().postId === id);
     if (existingLike) {
@@ -106,67 +106,4 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-  async function addComment(page, postId, content, time) {
-
-    // Get reference to the post
-    const postRef = doc(db, `${page}Posts`, postId);
-
-    // Get reference to the user
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const owner = user.email;
-    const nickname = user.displayName;
-    const userRef = doc(db, "users", owner);
-
-    // The comment data.
-    const comment = {
-      content: content,
-      nickname: nickname,
-      owner: owner,
-      page: page,
-      postId: postId,
-      time,
-      likes: 0,
-    };
-
-    // The data to add to the user's comment history.
-    const commentUserData = {
-      content: content,
-      nickname: nickname,
-      page: page,
-      postId: postId,
-      time: time,
-    }
-
-    try {
-      // Create a new comment document within the "comments" collection of the post
-      const commentsCollectionRef = collection(postRef, "comments");
-      const newCommentRef = await addDoc(commentsCollectionRef, comment);
-      const commentId = newCommentRef.id;
-      console.log('Comment added successfully with ID:', commentId);
-  
-      // Add comment to user's comment history
-      const userCommentsCollectionRef = collection(userRef, "comments");
-      await addDoc(userCommentsCollectionRef, commentUserData);
-      console.log("Comment added to user history.");
-    } catch (error) {
-      console.error('Error adding comment: ', error);
-    }
-  }
-  
-  // Update the likes for a specific comment in the post
-  function updateCommentLikes(page, postId, commentIndex, newLikes) {
-    const postRef = db.collection(`${page}Posts`).doc(postId);
-  
-    postRef.update({
-      [`comments.${commentIndex}.likes`]: newLikes
-    })
-      .then(() => {
-        console.log('Comment likes updated successfully');
-      })
-      .catch((error) => {
-        console.error('Error updating comment likes: ', error);
-      });
-}
-
-export { createPost, addComment, updateLikes, updateCommentLikes };
+export { createPost, updateLikes };

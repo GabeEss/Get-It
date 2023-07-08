@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import { auth, db } from "../../../firebase";
 import { doc, getDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
-import { addComment, updateCommentLikes, updateLikes } from "../../../logic/post";
+import { updateLikes } from "../../../logic/post";
+import { addComment, updateCommentLikes } from "../../../logic/comment";
 import { onAuthStateChanged } from "firebase/auth";
 
 
 const DisplayPost = () => {
-    const [post, setPost] = useState(null);
-    const [commentData, setCommentData] = useState(null);
-    const [comment, setComment] = useState("");
+    const [post, setPost] = useState(null); // hold the post to be displayed
+    const [commentData, setCommentData] = useState(null); // holds the commentData to be displayed
+    const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null); // if the user is logged in
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -54,7 +55,7 @@ const DisplayPost = () => {
         };
     
         fetchPost();
-      }, [page, id, likeChange]);
+      }, [page, id, likeChange, commentData]);
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -81,16 +82,26 @@ const DisplayPost = () => {
         return formattedDate;
       };
 
-      const handleLike = async (id, likesNum) => {
+      const handleLike = async (id, likesNum, commentid) => {
+        const type = "like";
         setNoClick(true);
-        await updateLikes(page, id, likesNum, "like");
+        if(commentid) {
+          await updateCommentLikes(page, id, commentid, likesNum, type);
+        } else {
+          await updateLikes(page, id, likesNum, type);
+        }
         setLikeChange(!likeChange);
         setNoClick(false);
       };
     
-      const handleDislike = async (id, likesNum) => {
+      const handleDislike = async (id, likesNum, commentid) => {
+        const type = "dislike";
         setNoClick(true);
-        await updateLikes(page, id, likesNum, "dislike");
+        if(commentid) {
+          await updateCommentLikes(page, id, commentid, likesNum, type);
+        } else {
+          await updateLikes(page, id, likesNum, type);
+        }
         setLikeChange(!likeChange);
         setNoClick(false);
       };
@@ -111,7 +122,13 @@ const DisplayPost = () => {
 
         // Retrieve comments for the post
         const querySnapshot = await getDocs(commentsCollectionRef);
-        const comments = querySnapshot.docs.map((doc) => doc.data());
+
+        // Add the comment id into the commentData state.
+        const comments = querySnapshot.docs.map((doc) => 
+        ({
+          ...doc.data(),
+          commentid: doc.id
+        }));
         setCommentData(comments);
       }
 
@@ -137,32 +154,60 @@ const DisplayPost = () => {
                 >Dislike</button>
               </p>
               <button onClick={handleGoBack}>Go Back</button>
-              <div className="post comment-area">
-                  <textarea
-                    className={`comment-textarea ${!user ? "disabled" : ""}`}
-                    placeholder="Write your comment..."
-                    onChange={(e) => handleCommentChange(e.target.value)}
-                    value={comment}
-                  ></textarea>
-                  <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
-                  {commentData ? commentData.map((comment, index) => (
-                      <div key={index} className="post comment-content">
-                        <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
-                        {comment.content}
-                        <button
-                          className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                          onClick={() => {
-                              // handleLike(id, comment.likes);
-                          }}>Like</button>
-                          {comment.likes}
+              {user ? 
+                <div className="post comment-area">
+                    <textarea
+                      className={`comment-textarea ${!user ? "disabled" : ""}`}
+                      placeholder="Write your comment..."
+                      onChange={(e) => handleCommentChange(e.target.value)}
+                      value={comment}
+                    ></textarea>
+                    <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
+                    {commentData ? commentData.map((comment, index) => (
+                        <div key={index} className="post comment-content">
+                          <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
+                          {comment.content}
                           <button
-                          className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                          onClick={() => {
-                              // handleDislike(id, comment.likes);
-                          }}>Dislike</button>
-                      </div>
-                  )) : ""}
-              </div>
+                            className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                            onClick={() => {
+                                handleLike(id, comment.likes, comment.commentid);
+                            }}>Like
+                          </button>
+                            {comment.likes}
+                          <button
+                            className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                            onClick={() => {
+                                handleDislike(id, comment.likes, comment.commentid);
+                            }}>Dislike
+                          </button>
+                          <button>Edit Comment</button>
+                          <button>Delete Comment</button>
+                        </div>
+                    )) : ""}
+                </div>
+              : 
+              <div className="post non-user">
+                {commentData ? commentData.map((comment, index) => (
+                        <div key={index} className="post comment-content">
+                          <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
+                          {comment.content}
+                          <button
+                            className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                            onClick={() => {
+                                handleLike(id, comment.likes, comment.commentid);
+                            }}>Like
+                          </button>
+                            {comment.likes}
+                          <button
+                            className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                            onClick={() => {
+                                handleDislike(id, comment.likes, comment.commentid);
+                            }}>Dislike
+                          </button>
+                        </div>
+                    )) : ""}
+              </div>            
+              }
             </div>
           ) : (
             <p>Loading post...</p>

@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from "react";
-import { createPost, updateLikes } from "../../../logic/post";
+import { createPost } from "../../../logic/post";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { db, auth } from "../../../firebase";
-import { collection, getDoc, doc, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import DisplayPosts from "./DisplayPosts";
 
+// When making a new page, you only need to change the function name and the page variable.
 const BusinessDB = () => {
     const page = "business";
     const [newPost, setPost] = useState(false);
