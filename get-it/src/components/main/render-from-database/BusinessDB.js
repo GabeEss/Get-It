@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import { createPost } from "../../../logic/post";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { db, auth } from "../../../firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth } from "../../../firebase";
+import { serverTimestamp } from "firebase/firestore";
 import DisplayPosts from "./DisplayPosts";
 
 // When making a new page, you only need to change the function name and the page variable.
@@ -50,20 +50,6 @@ const BusinessDB = () => {
         if(user) {
             // This will add the post to a collection of all posts related to this page.
             const postID = await createPost(owner, title, content, page, time, nickname);
-
-            const post = {
-                title: title,
-                content: content,
-                page: page,
-                time: time,
-                nickname: nickname,
-                postID: postID
-            };
-
-            // Create a reference to the user's subcollection
-            const userPostsRef = collection(db, "users", owner, "posts");
-            // Add the post to the user's subcollection, so they have a history of posts they make
-            await addDoc(userPostsRef, { post });
             setRefresh(!refreshPosts);
         }
         onClose();
@@ -73,7 +59,7 @@ const BusinessDB = () => {
         return(
             <div className="newpost popup">
                 <h2>New Post</h2>
-                <form onSubmit={() => handleCreatePost}>
+                <form onSubmit={handleCreatePost}>
                     <input
                     type="text"
                     value={title}

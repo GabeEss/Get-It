@@ -12,7 +12,6 @@ async function addComment(page, postId, content, time) {
     const user = auth.currentUser;
     const owner = user.email;
     const nickname = user.displayName;
-    const userRef = doc(db, "users", owner);
 
     // The comment data.
     const comment = {
@@ -25,27 +24,12 @@ async function addComment(page, postId, content, time) {
       likes: 0,
     };
 
-    // The data to add to the user's comment history.
-    const commentUserData = {
-      content: content,
-      nickname: nickname,
-      page: page,
-      postId: postId,
-      time: time,
-      deletedpost: false,
-    }
-
     try {
       // Create a new comment document within the "comments" collection of the post
       const commentsCollectionRef = collection(postRef, "comments");
       const newCommentRef = await addDoc(commentsCollectionRef, comment);
       const commentId = newCommentRef.id;
       console.log('Comment added successfully with ID:', commentId);
-  
-      // Add comment to user's comment history
-      const userCommentsCollectionRef = collection(userRef, "comments");
-      await addDoc(userCommentsCollectionRef, commentUserData);
-      console.log("Comment added to user history.");
     } catch (error) {
       console.error('Error adding comment: ', error);
     }

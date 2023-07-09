@@ -39,6 +39,7 @@ async function updateLikes(page, id, numLikes, type) {
 
     // Find the like to the specific post
     const existingLike = querySnapshot.docs.find(doc => doc.data().postId === id);
+
     if (existingLike) {
       // Get the doc snapshot
       const existingLikeRef = doc(likesCollectionRef, existingLike.id);
@@ -75,7 +76,7 @@ async function updateLikes(page, id, numLikes, type) {
               await deleteDoc(existingLikeRef);
             }
         } else console.log("The type of like is not defined.");
-      } 
+      }
     } else {
       const likeData = {
         postId: id,

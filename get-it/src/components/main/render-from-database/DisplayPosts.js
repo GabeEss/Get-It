@@ -1,14 +1,16 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { auth, db } from "../../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, limit, startAfter } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes } from "../../../logic/post";
 import { onAuthStateChanged } from "firebase/auth";
 
 const DisplayPosts = ({page, refreshPosts}) => {
     const [posts, setPosts] = useState([]);
-    const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
+    const [likeChange, setLikeChange] = useState(false);
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
+    const [lastPost, setLastPost] = useState(null); // Track the last post retrieved
+    const [isLoading, setIsLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
@@ -30,27 +32,71 @@ const DisplayPosts = ({page, refreshPosts}) => {
     }, []);
 
 
-    const loadPosts = () => {
-      const fetchData = async () => {
-        try {
-          const querySnapshot = await getDocs(collection(db, `${page}Posts`));
-          const postData = querySnapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-          }));
-          setPosts(postData);
-        } catch (error) {
-          console.error("Error fetching posts: ", error);
-        }
-      };
+    const loadPosts = useCallback(async () => {
+      try {
+        setIsLoading(true);
   
-      fetchData();
-    }
+        // Construct the Firestore query for pagination
+        let postsQuery = query(collection(db, `${page}Posts`));
+  
+        // If lastPost exists, set the query to start after it
+        if (lastPost) {
+          postsQuery = query(postsQuery, startAfter(lastPost));
+        }
+  
+        // Limit the number of posts retrieved per page
+        postsQuery = query(postsQuery, limit(10));
+  
+        const querySnapshot = await getDocs(postsQuery);
+        const postData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+  
+        // Set the last post for pagination
+        const lastVisiblePost = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastPost(lastVisiblePost);
+  
+        // Append or replace the posts based on the pagination
+        if (lastPost) {
+          setPosts((prevPosts) => [...prevPosts, ...postData]);
+        } else {
+          setPosts(postData);
+        }
+  
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching posts: ", error);
+      }
+    }, [lastPost, page]);
 
-    useEffect(() => {
-        console.log("The posts displayed on this page have been refreshed.");
+
+    // const loadPosts = () => {
+    //   const fetchData = async () => {
+    //     try {
+    //       const querySnapshot = await getDocs(collection(db, `${page}Posts`));
+    //       const postData = querySnapshot.docs.map((doc) => ({
+    //         ...doc.data(),
+    //         id: doc.id,
+    //       }));
+    //       setPosts(postData);
+    //     } catch (error) {
+    //       console.error("Error fetching posts: ", error);
+    //     }
+    //   };
+  
+    //   fetchData();
+    // }
+
+    // useEffect(() => {
+    //     console.log("The posts displayed on this page have been refreshed.");
+    //     // loadPosts();
+    //   }, [page, likeChange, refreshPosts]);
+
+      // Load initial posts
+      useEffect(() => {
         loadPosts();
-      }, [page, likeChange, refreshPosts]);
+      }, [loadPosts]);
 
       const formatTime = ({seconds}) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -99,7 +145,9 @@ const DisplayPosts = ({page, refreshPosts}) => {
 
     return(
         <div>
-            {posts.length === 0 ? (
+            {isLoading ? 
+              <p>Loading...</p>
+            : posts.length === 0 ? (
                 <p>Be the first to write a post...</p>
                 ) : (
                     <ol className="post-list">
