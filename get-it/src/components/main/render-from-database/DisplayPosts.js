@@ -48,6 +48,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
     }
 
     useEffect(() => {
+        console.log("The posts displayed on this page have been refreshed.");
         loadPosts();
       }, [page, likeChange, refreshPosts]);
 
