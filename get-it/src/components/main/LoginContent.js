@@ -3,8 +3,7 @@ import { signInWithEmailAndPassword, signInWithPopup,
     GoogleAuthProvider } from "firebase/auth";
 import { LoginContext } from "../../contexts/LoginScreenContext.js";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
-import {auth, provider, db} from "../../firebase.js";
+import {auth, provider} from "../../firebase.js";
 
 const SignIn = () => {
     const [username, setUsername] = useState("");
@@ -79,38 +78,15 @@ const SignIn = () => {
 // SIGN IN GOOGLE
 
 const SignInGoogle = ({ setLogin }) => {
-    const createUserDocument = async (userData) => {
-        try {
-          const docRef = await addDoc(collection(db, "users"), userData);
-          console.log("User document created with ID:", docRef.id);
-        } catch (error) {
-          console.error("Error storing user data:", error);
-        }
-      };
-
     // This signs the user in if they are using google, but it also can create a new user.
     const handleSignInWithGoogle = () => {
       signInWithPopup(auth, provider)
         .then(async (result) => {
-          const user = result.user;
           const credential = GoogleAuthProvider.credentialFromResult(result);
           // Check if sign in object has google credential
           if (credential) {
-                // Check if the user document already exists in Firestore
-                const userQuery = query(collection(db, "users"), where("email", "==", user.email));
-                const querySnapshot = await getDocs(userQuery);
-  
-                // If the snapshot isn't empty, then nothing happens, the user should be logged in already.
-                if (querySnapshot.empty) {
-                  // User document doesn't exist, create a new one
-                  const userData = {
-                    email: user.email,
-                    nickname: user.displayName,
-                  };
-                  await createUserDocument(userData);
-                  setLogin(false);
-                }
-                setLogin(false);    
+            console.log("Sign-in with Google successful.");
+            setLogin(false);    
           } else {
             throw new Error("Google credential not available");
           }

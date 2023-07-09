@@ -4,8 +4,6 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider,
     signInWithEmailAndPassword } from "firebase/auth";
 import {auth, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
-import { db } from "../../firebase.js";
 
 // SIGN UP FORM
 
@@ -36,15 +34,6 @@ const SignUp = () => {
             setConfirm(false);
     }
 
-    const createUserDocument = async (userData) => {
-        try {
-          const docRef = await addDoc(collection(db, "users"), userData);
-          console.log("User document created with ID:", docRef.id);
-        } catch (error) {
-          console.error("Error storing user data:", error);
-        }
-      };
-
       const handleSubmitCreate = (event) => {
         event.preventDefault();
         if (confirm) {
@@ -68,20 +57,6 @@ const SignUp = () => {
                   .then(async (userCredential) => {
                     const user = userCredential.user;
                     console.log("Sign-up successful:", user);
-    
-                    // Check if the user document already exists in Firestore
-                    const userQuery = query(collection(db, "users"), where("email", "==", username));
-                    const querySnapshot = await getDocs(userQuery);
-    
-                    if (querySnapshot.empty) {
-                      // User document doesn't exist, create a new one
-                      const userData = {
-                        email: username,
-                        nickname: user.displayName,
-                      };
-                      await createUserDocument(userData);
-                    }
-    
                     onClose();
                   })
                   .catch((error) => {
@@ -148,36 +123,16 @@ const SignUp = () => {
 // SIGN UP GOOGLE
 
 const SignUpGoogle = ({ setSignUp }) => {
-    const createUserDocument = async (userData) => {
-        try {
-          const docRef = await addDoc(collection(db, "users"), userData);
-          console.log("User document created with ID:", docRef.id);
-        } catch (error) {
-          console.error("Error storing user data:", error);
-        }
-      };
-
     const handleSignUpWithGoogle = () => {
       signInWithPopup(auth, provider)
         .then(async (result) => {
-          const user = result.user;
           const credential = GoogleAuthProvider.credentialFromResult(result);
           // Check if sign in object has google credential
           if (credential) {
-                // Check if the user document already exists in Firestore
-                const userQuery = query(collection(db, "users"), where("email", "==", user.email));
-                const querySnapshot = await getDocs(userQuery);
-  
-                if (querySnapshot.empty) {
-                  // User document doesn't exist, create a new one
-                  const userData = {
-                    email: user.email,
-                    nickname: user.displayName,
-                  };
-                  await createUserDocument(userData);
-                }
-                setSignUp(false);    
+            console.log("Sign-up with Google successful.");
+            setSignUp(false);    
           } else {
+            setSignUp(false);
             throw new Error("Google credential not available");
           }
         })

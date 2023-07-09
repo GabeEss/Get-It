@@ -64,7 +64,6 @@ const BusinessDB = () => {
 
             // Create a reference to the user's subcollection
             const userPostsRef = collection(db, "users", owner, "posts");
-        
             // Add the post to the user's subcollection, so they have a history of posts they make
             await addDoc(userPostsRef, { post });
             
@@ -101,8 +100,6 @@ const BusinessDB = () => {
             </div>
         )
     }
-
-    
 
     return(
         <div>
