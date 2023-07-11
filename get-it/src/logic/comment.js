@@ -18,7 +18,6 @@ async function addComment(page, postId, content, time) {
       content: content,
       nickname: nickname,
       owner: owner,
-      page: page,
       postId: postId,
       time: time,
       likes: 0,

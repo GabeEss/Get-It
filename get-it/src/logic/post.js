@@ -9,7 +9,6 @@ async function createPost(owner, title, content, page, time, nickname) {
       owner: owner,
       content: content,
       likes: 0,
-      page: page,
       time: time,
       nickname: nickname
     };
