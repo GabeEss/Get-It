@@ -16,15 +16,15 @@ function App() {
       <LoginProvider>
         <SignUpProvider>
           <ResetPasswordProvider>
-            <SearchProvider>
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/gaming" element={<Gamingpage />} />
-                <Route path="/business" element={<Businesspage />} />
-                <Route path="/television" element={<Televisionpage />} />
-                <Route path=":page/:title/:id" element={<Postpage />} />
-              </Routes>
-            </SearchProvider>
+              <SearchProvider>
+                <Routes>
+                  <Route path="/" element={<Homepage />} />
+                  <Route path="/gaming" element={<Gamingpage />} />
+                  <Route path="/business" element={<Businesspage />} />
+                  <Route path="/television" element={<Televisionpage />} />
+                  <Route path=":page/:title/:id" element={<Postpage />} />
+                </Routes>
+              </SearchProvider>
           </ResetPasswordProvider>
         </SignUpProvider>
       </LoginProvider>

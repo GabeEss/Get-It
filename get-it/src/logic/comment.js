@@ -89,6 +89,7 @@ async function addComment(page, postId, content, time) {
               await deleteDoc(existingLikeRef);
             }
         } else console.log("The type of like is not defined.");
+        return prevlikedValue;
       } 
     } else {
       // user like data
@@ -105,6 +106,7 @@ async function addComment(page, postId, content, time) {
 
       // Add the like to the user's like history, if the user has not liked this post before.
       await addDoc(likesCollectionRef, userLikeData);
+      return null;
     }
 }
 

@@ -20,15 +20,15 @@ const HomeContent = () => {
     // Sets the current page
     useEffect(() => {
         const getCurrentPage = () => {
-          const container = document.querySelector(".homepage");
-          if (container) {
-            return container.getAttribute("data-page");
-          }
-          return "home";
-        };
-    
-        const page = getCurrentPage();
-        setCurrentPage(page);
+            const container = document.querySelector(".homepage");
+            if (container) {
+                return container.getAttribute("data-page");
+            }
+            return "home";
+            };
+        
+            const page = getCurrentPage();
+            setCurrentPage(page);
       }, []);
 
     const renderContent = () => {
@@ -47,10 +47,6 @@ const HomeContent = () => {
                 return <HomeDB/>;
         }
     };
-
-    useEffect(() => {
-        renderContent();
-      }, []);
 
     return(
         <div className="home-main">
