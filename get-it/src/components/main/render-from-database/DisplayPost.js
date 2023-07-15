@@ -13,7 +13,6 @@ const DisplayPost = () => {
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [newCommentRefresh, setRefreshComments] = useState(false); // so that useEffect can refresh when a new comment is made
     const [comment, setComment] = useState(""); // holds the string for the textarea input
-    const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
@@ -114,7 +113,6 @@ const DisplayPost = () => {
             handleLocalizedPostLike(id, likesNum, type, prevExistingLike);
           } else handleLocalizedNewPostLike(id, likesNum, type);
         }
-        setLikeChange(!likeChange);
         setNoClick(false);
       };
     
@@ -130,7 +128,6 @@ const DisplayPost = () => {
             handleLocalizedPostLike(id, likesNum, type, prevExistingLike);
           } else handleLocalizedNewPostLike(id, likesNum, type);
         }
-        setLikeChange(!likeChange);
         setNoClick(false);
       };
 
@@ -166,7 +163,7 @@ const DisplayPost = () => {
       }
 
       const handleLocalizedNewComment = () => {
-        
+
       }
 
       const handleLocalizedPostLike = (postId, likesNum, type, prevExistingLike) => {
