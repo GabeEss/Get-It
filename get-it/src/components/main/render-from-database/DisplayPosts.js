@@ -234,6 +234,14 @@ const DisplayPosts = ({page, refreshPosts}) => {
         setPosts(updatedPosts);
       }
 
+      const handleEdit = () => {
+
+      }
+
+      const handleDelete = () => {
+
+      }
+
     return(
         <div>
             {isLoading ? 
@@ -263,6 +271,18 @@ const DisplayPosts = ({page, refreshPosts}) => {
                                     handleDislike(postItem.id, postItem.likes);
                                 }}>Dislike</button>
                             </p>
+                            {user ? 
+                                <div className="post post-owner">
+                                <button className={`editbutton ${user.email === postItem.owner ? "" : "disabled"}`}
+                                onClick={() => {
+                                  handleEdit();
+                                }}>Edit</button>
+                                <button className={`deletebutton ${user.email === postItem.owner ? "" : "disabled"}`}
+                                onClick={() => {
+                                  handleDelete();
+                                }}>Delete</button>
+                              </div>
+                            : ""}
                         </li>
                     ))}
                     </ol>
