@@ -106,7 +106,10 @@ const DisplayPost = () => {
         const type = "like";
         setNoClick(true);
         if(commentid) {
-          await updateCommentLikes(page, id, commentid, likesNum, type);
+          const prevExistingLike = await updateCommentLikes(page, id, commentid, likesNum, type);
+          if(prevExistingLike) {
+            handleLocalizedCommentLike(commentid, likesNum, type, prevExistingLike);
+          } else handleLocalizedNewCommentLike(commentid, likesNum, type);
         } else {
           const prevExistingLike = await updateLikes(page, id, likesNum, type);
           if(prevExistingLike) {
@@ -120,7 +123,10 @@ const DisplayPost = () => {
         const type = "dislike";
         setNoClick(true);
         if(commentid) {
-          await updateCommentLikes(page, id, commentid, likesNum, type);
+          const prevExistingLike = await updateCommentLikes(page, id, commentid, likesNum, type);
+          if(prevExistingLike) {
+            handleLocalizedCommentLike(commentid, likesNum, type, prevExistingLike);
+          } else handleLocalizedNewCommentLike(commentid, likesNum, type);
         } else {
           const prevExistingLike = await updateLikes(page, id, likesNum, type);
           // Update the local display without calling firestore.
@@ -158,17 +164,77 @@ const DisplayPost = () => {
         setCommentData(comments);
       }
 
-      const handleLocalizedCommentLike = () => {
 
+      // When the user likes a comment they have liked before.
+      const handleLocalizedCommentLike = (id, likesNum, type, prevExistingLike) => {
+        const updatedComments = commentData.map((comment) => {
+          // Does post match the post that needs to be changed.
+          if (comment.commentid === id) {
+              // Did the user click the like or dislike button.
+              if(type === "like") {
+                // Was the user's previous choice a like or dislike.
+                if(prevExistingLike === "like") {
+                  // Liking a former like
+                  return {
+                    ...comment,
+                    likes: likesNum - 1,
+                  };
+                  // Liking a former dislike
+                } else {
+                  return {
+                    ...comment,
+                    likes: likesNum + 2,
+                  };
+                }
+            } else {
+              // Disliking a former like
+              if(prevExistingLike === "like") {
+                return {
+                  ...comment,
+                  likes: likesNum - 2,
+                };
+              // Disliking a former dislike
+              } else {
+                return {
+                  ...comment,
+                  likes: likesNum + 1,
+                };
+              }
+            }
+          }
+          // If no post found, return the previous item unaltered.
+          return comment;
+        });
+        setCommentData(updatedComments);
       }
 
-      const handleLocalizedNewComment = () => {
-
+      // When the user likes a comment they have not liked before.
+      const handleLocalizedNewCommentLike = (id, likesNum, type) => {
+        const updatedComments = commentData.map((comment) => {
+          if (comment.commentid === id) {
+            if(type === "like") {
+              // New like
+                return {
+                  ...comment,
+                  likes: likesNum + 1,
+              };
+              // New dislike
+            } else {
+              return {
+                ...comment,
+                likes: likesNum - 1,
+              };
+            }
+          }
+          // If no post found, return the previous item unaltered.
+          return comment;
+        });
+        setCommentData(updatedComments);
       }
 
+      // When the user likes a post they have liked before.
       const handleLocalizedPostLike = (postId, likesNum, type, prevExistingLike) => {
         const updatedPost = { ...post };
-        
         if (updatedPost.id === postId) {
           if (type === "like") {
             if (prevExistingLike === "like") {
@@ -184,13 +250,13 @@ const DisplayPost = () => {
             }
           }
         }
-      
         setPost(updatedPost);
       };
 
+
+      // When the user likes a post they have not liked before.
       const handleLocalizedNewPostLike = (postId, likesNum, type) => {
         const updatedPost = { ...post };
-        
         if (updatedPost.id === postId) {
           if (type === "like") {
             updatedPost.likes = likesNum + 1;
@@ -198,7 +264,6 @@ const DisplayPost = () => {
             updatedPost.likes = likesNum - 1;
           }
         }
-      
         setPost(updatedPost);
       };
     
