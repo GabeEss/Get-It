@@ -94,6 +94,7 @@ async function addComment(page, postId, content, time) {
       // user like data
     const userLikeData = {
         commentId: commentId,
+        parentId: postId,
         type: type
     }
 
