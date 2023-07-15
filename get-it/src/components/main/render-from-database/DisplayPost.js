@@ -10,6 +10,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const DisplayPost = () => {
     const [post, setPost] = useState(null); // hold the post to be displayed
     const [commentData, setCommentData] = useState(null); // holds the commentData to be displayed
+    const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [newCommentRefresh, setRefreshComments] = useState(false); // so that useEffect can refresh when a new comment is made
     const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [likeChange, setLikeChange] = useState(false); // So the display re-renders on like/dislike
@@ -39,14 +40,13 @@ const DisplayPost = () => {
         navigate(`/${page}`);
     };
 
-    useEffect(() => {
+      const loadPost = async () => {
         const fetchPost = async () => {
           try {
             const postRef = doc(db, `${page}Posts`, id);
             const docSnap = await getDoc(postRef);
             if (docSnap.exists()) {
               setPost({ id: docSnap.id, ...docSnap.data() });
-              handleCommentData();
             } else {
               console.log("No such post exists!");
             }
@@ -54,9 +54,29 @@ const DisplayPost = () => {
             console.error("Error fetching post: ", error);
           }
         };
-    
-        fetchPost();
-      }, [page, newCommentRefresh, likeChange]);
+
+        if(count === 1) {
+          console.log("Firebase called.");
+          await fetchPost();
+          setCount(0);
+        }
+      }
+        
+  
+      // On load control the number of times firebase is called by altering setCount.
+      useEffect(() => {
+        if(count !== 1)
+          setCount(1);
+      }, []);
+  
+      useEffect(() => {
+        if(count !== 1)
+          setCount(1);
+      }, [newCommentRefresh])
+  
+      useEffect(() => {
+        loadPost();
+      }, [count])
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -89,7 +109,10 @@ const DisplayPost = () => {
         if(commentid) {
           await updateCommentLikes(page, id, commentid, likesNum, type);
         } else {
-          await updateLikes(page, id, likesNum, type);
+          const prevExistingLike = await updateLikes(page, id, likesNum, type);
+          if(prevExistingLike) {
+            handleLocalizedPostLike(id, likesNum, type, prevExistingLike);
+          } else handleLocalizedNewPostLike(id, likesNum, type);
         }
         setLikeChange(!likeChange);
         setNoClick(false);
@@ -101,7 +124,11 @@ const DisplayPost = () => {
         if(commentid) {
           await updateCommentLikes(page, id, commentid, likesNum, type);
         } else {
-          await updateLikes(page, id, likesNum, type);
+          const prevExistingLike = await updateLikes(page, id, likesNum, type);
+          // Update the local display without calling firestore.
+        if(prevExistingLike) {
+            handleLocalizedPostLike(id, likesNum, type, prevExistingLike);
+          } else handleLocalizedNewPostLike(id, likesNum, type);
         }
         setLikeChange(!likeChange);
         setNoClick(false);
@@ -134,6 +161,49 @@ const DisplayPost = () => {
         setCommentData(comments);
       }
 
+      const handleLocalizedCommentLike = () => {
+
+      }
+
+      const handleLocalizedNewComment = () => {
+        
+      }
+
+      const handleLocalizedPostLike = (postId, likesNum, type, prevExistingLike) => {
+        const updatedPost = { ...post };
+        
+        if (updatedPost.id === postId) {
+          if (type === "like") {
+            if (prevExistingLike === "like") {
+              updatedPost.likes = likesNum - 1;
+            } else {
+              updatedPost.likes = likesNum + 2;
+            }
+          } else {
+            if (prevExistingLike === "like") {
+              updatedPost.likes = likesNum - 2;
+            } else {
+              updatedPost.likes = likesNum + 1;
+            }
+          }
+        }
+      
+        setPost(updatedPost);
+      };
+
+      const handleLocalizedNewPostLike = (postId, likesNum, type) => {
+        const updatedPost = { ...post };
+        
+        if (updatedPost.id === postId) {
+          if (type === "like") {
+            updatedPost.likes = likesNum + 1;
+          } else {
+            updatedPost.likes = likesNum - 1;
+          }
+        }
+      
+        setPost(updatedPost);
+      };
     
       return (
         <div>
@@ -165,6 +235,7 @@ const DisplayPost = () => {
                       value={comment}
                     ></textarea>
                     <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
+                    {commentData ? "" : <div onClick={handleCommentData}>Comments...</div>}
                     {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content">
                           <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
@@ -189,6 +260,7 @@ const DisplayPost = () => {
                 </div>
               : 
               <div className="post non-user">
+                {commentData ? "" : <div onClick={handleCommentData}>Comments...</div>}
                 {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content">
                           <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>

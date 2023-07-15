@@ -51,7 +51,7 @@ async function addComment(page, postId, content, time) {
     const querySnapshot = await getDocs(likesCollectionRef);
 
     // Find the like to the specific comment
-    const existingLike = querySnapshot.docs.find(doc => doc.data().commentId === commentId);
+    const existingLike = querySnapshot.docs.find(doc => doc.data().postId === commentId);
     if (existingLike) {
       // Get the doc snapshot
       const existingLikeRef = doc(likesCollectionRef, existingLike.id);
