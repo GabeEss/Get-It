@@ -5,6 +5,7 @@ import Gamingpage from "./components/pages/GamingPage";
 import Businesspage from "./components/pages/BusinessPage";
 import Televisionpage from "./components/pages/TelevisionPage";
 import Postpage from "./components/pages/PostPage";
+import Accountpage from "./components/pages/AccountPage";
 import { SearchProvider } from "./contexts/SearchContext";
 import { SignUpProvider } from "./contexts/SignUpScreenContext";
 import { LoginProvider } from "./contexts/LoginScreenContext";
@@ -23,6 +24,7 @@ function App() {
                   <Route path="/business" element={<Businesspage />} />
                   <Route path="/television" element={<Televisionpage />} />
                   <Route path=":page/:title/:id" element={<Postpage />} />
+                  <Route path="/account" element={<Accountpage />} />
                 </Routes>
               </SearchProvider>
           </ResetPasswordProvider>

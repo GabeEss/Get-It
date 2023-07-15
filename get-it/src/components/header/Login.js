@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useContext} from "react";
+import { useNavigate } from 'react-router-dom';
 import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { onAuthStateChanged } from "firebase/auth";
-import {auth} from "../../firebase.js";
+import { auth } from "../../firebase.js";
 import SignOut from "../main/SignOutContent";
 
 const Login = () => {
@@ -11,6 +12,7 @@ const Login = () => {
     const {setSignUp} = useContext(SignUpContext);
     const {setReset} = useContext(ResetPasswordContext);
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -41,6 +43,13 @@ const Login = () => {
         setSignUp(true);
     }
 
+    const handleAccountPage = () => {
+        setSignUp(false);
+        setLogin(false);
+        setSignUp(false);
+        navigate('/account');
+    }
+
     return(
         <div className="login-container">
             {!user && (
@@ -56,7 +65,7 @@ const Login = () => {
             )}
             {user && (
                 <>
-                <button id="user">User</button>
+                <button id="user" onClick={handleAccountPage}>User</button>
                 <br />
                 <SignOut/>
                 </>
