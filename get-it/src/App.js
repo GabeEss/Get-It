@@ -10,6 +10,7 @@ import { SearchProvider } from "./contexts/SearchContext";
 import { SignUpProvider } from "./contexts/SignUpScreenContext";
 import { LoginProvider } from "./contexts/LoginScreenContext";
 import { ResetPasswordProvider } from "./contexts/ResetPasswordContext";
+import { EditProvider } from "./contexts/EditPostContext";
 
 function App() {
   return (
@@ -18,14 +19,16 @@ function App() {
         <SignUpProvider>
           <ResetPasswordProvider>
               <SearchProvider>
-                <Routes>
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/gaming" element={<Gamingpage />} />
-                  <Route path="/business" element={<Businesspage />} />
-                  <Route path="/television" element={<Televisionpage />} />
-                  <Route path=":page/:title/:id" element={<Postpage />} />
-                  <Route path="/account" element={<Accountpage />} />
-                </Routes>
+                <EditProvider>
+                  <Routes>
+                    <Route path="/" element={<Homepage />} />
+                    <Route path="/gaming" element={<Gamingpage />} />
+                    <Route path="/business" element={<Businesspage />} />
+                    <Route path="/television" element={<Televisionpage />} />
+                    <Route path=":page/:title/:id" element={<Postpage />} />
+                    <Route path="/account" element={<Accountpage />} />
+                  </Routes>
+                </EditProvider>
               </SearchProvider>
           </ResetPasswordProvider>
         </SignUpProvider>

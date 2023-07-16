@@ -5,6 +5,8 @@ import { LoginContext } from "../../contexts/LoginScreenContext.js";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 import {auth, provider} from "../../firebase.js";
 
+// LOGIN FORM
+
 const SignIn = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

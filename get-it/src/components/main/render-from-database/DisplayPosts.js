@@ -4,6 +4,7 @@ import { collection, getDoc, getDocs, doc, query, limit, startAfter } from "fire
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost, editPost } from "../../../logic/post";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { EditContext } from "../../../contexts/EditPostContext";
 
 const DisplayPosts = ({page, refreshPosts}) => {
     const [posts, setPosts] = useState([]);
@@ -13,6 +14,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
     const [isLoading, setIsLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const {setEdit} = useContext(EditContext); // Controls the edit form pop up
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -234,8 +236,23 @@ const DisplayPosts = ({page, refreshPosts}) => {
         setPosts(updatedPosts);
       }
 
-      const handleEdit = (postId) => {
-        editPost(page, postId);
+      const handleLocalizedEdit = (postId, title, content) => {
+        const updatedPosts = posts.map((postItem) => {
+          if (postItem.id === postId) {
+                return {
+                  ...postItem,
+                  title: title,
+                  content: content
+                };
+              }
+          // If no post found, return the previous item unaltered.
+          return postItem;
+        });
+        setPosts(updatedPosts);
+      }
+
+      const handleEditClick = (postId) => {
+        setEdit(postId);
       }
 
       const handleDelete = (postId) => {
@@ -259,7 +276,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
                             <h5 className="post post-time">
                                 Time of post in UTC: {formatTime(postItem.time)}
                             </h5>
-                            <p className="post post-content">{postItem.content}</p>
+                            {<p className="post post-content">{postItem.content}</p>}
                             <p className="post post-likes">
                                 <button className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                                 onClick={() => {
@@ -275,11 +292,11 @@ const DisplayPosts = ({page, refreshPosts}) => {
                                 <div className="post post-owner">
                                 <button className={`editbutton ${user.email === postItem.owner ? "" : "disabled"}`}
                                 onClick={() => {
-                                  handleEdit();
+                                  handleEditClick(postItem.id);
                                 }}>Edit</button>
                                 <button className={`deletebutton ${user.email === postItem.owner ? "" : "disabled"}`}
                                 onClick={() => {
-                                  handleDelete();
+                                  
                                 }}>Delete</button>
                               </div>
                             : ""}

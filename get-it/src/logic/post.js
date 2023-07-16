@@ -25,14 +25,37 @@ async function createPost(owner, title, content, page, time, nickname) {
 
 async function deletePost(page, postId) {
   const postRef = doc(db, `${page}Posts`, postId);
+  await deleteDoc(postRef);
 }
 
-async function editPost(page, postId) {
-  const postRef = doc(db, `${page}Posts`, postId);  
+async function editPost(page, postId, newTitle, newContent) {
+  const postRef = doc(db, `${page}Posts`, postId);
+
+  await updateDoc(postRef, {
+    title: newTitle,
+    content: newContent
+  })
+  .then(() => {
+    // console.log('Post updated successfully');
+  })
+  .catch((error) => {
+    console.error('Error updating post: ', error);
+  });
 }
 
-async function clearLikeHistory(page, postId) {
+async function clearLikeHistory(page) {
+  // Get a reference to the user
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const owner = user.email;
+  const userRef = doc(db, "users", owner);
 
+   // Get user like history, find if user has liked the post before
+   const likesCollectionRef = collection(userRef, "likes");
+   const querySnapshotLikes = await getDocs(likesCollectionRef);
+
+   // Get all the posts on a particular page
+   const querySnapshotPosts = await getDocs(collection(db, `${page}Posts`));
 }
 
 
