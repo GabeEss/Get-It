@@ -102,14 +102,14 @@ const DisplayPost = () => {
         return formattedDate;
       };
 
-      const handleLike = async (id, likesNum, commentid) => {
+      const handleLike = async (id, likesNum, commentId) => {
         const type = "like";
         setNoClick(true);
-        if(commentid) {
-          const prevExistingLike = await updateCommentLikes(page, id, commentid, likesNum, type);
+        if(commentId) {
+          const prevExistingLike = await updateCommentLikes(page, id, commentId, likesNum, type);
           if(prevExistingLike) {
-            handleLocalizedCommentLike(commentid, likesNum, type, prevExistingLike);
-          } else handleLocalizedNewCommentLike(commentid, likesNum, type);
+            handleLocalizedCommentLike(commentId, likesNum, type, prevExistingLike);
+          } else handleLocalizedNewCommentLike(commentId, likesNum, type);
         } else {
           const prevExistingLike = await updateLikes(page, id, likesNum, type);
           if(prevExistingLike) {
@@ -266,6 +266,14 @@ const DisplayPost = () => {
         }
         setPost(updatedPost);
       };
+
+      const handleEdit = (postId, commentId) => {
+
+      }
+
+      const handleDelete = (postId, commentId) => {
+
+      }
     
       return (
         <div>
@@ -287,6 +295,18 @@ const DisplayPost = () => {
                 onClick={() => { handleDislike(id, post.likes);}}
                 >Dislike</button>
               </p>
+              {user ? 
+                  <div className="post post-owner">
+                  <button className={`editbutton ${user.email === post.owner ? "" : "disabled"}`}
+                  onClick={() => {
+                    handleEdit();
+                  }}>Edit</button>
+                  <button className={`deletebutton ${user.email === post.owner ? "" : "disabled"}`}
+                  onClick={() => {
+                    handleDelete();
+                  }}>Delete</button>
+                </div>
+              : ""}
               <button onClick={handleGoBack}>Go Back</button>
               {user ? 
                 <div className="post comment-area">

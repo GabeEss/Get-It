@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext, useCallback} from "react";
 import { auth, db } from "../../../firebase";
 import { collection, getDoc, getDocs, doc, query, limit, startAfter } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import { updateLikes } from "../../../logic/post";
+import { updateLikes, deletePost, editPost } from "../../../logic/post";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const DisplayPosts = ({page, refreshPosts}) => {
@@ -234,12 +234,12 @@ const DisplayPosts = ({page, refreshPosts}) => {
         setPosts(updatedPosts);
       }
 
-      const handleEdit = () => {
-
+      const handleEdit = (postId) => {
+        editPost(page, postId);
       }
 
-      const handleDelete = () => {
-
+      const handleDelete = (postId) => {
+        deletePost(page, postId);
       }
 
     return(

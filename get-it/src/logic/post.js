@@ -23,6 +23,19 @@ async function createPost(owner, title, content, page, time, nickname) {
       }
 }
 
+async function deletePost(page, postId) {
+  const postRef = doc(db, `${page}Posts`, postId);
+}
+
+async function editPost(page, postId) {
+  const postRef = doc(db, `${page}Posts`, postId);  
+}
+
+async function clearLikeHistory(page, postId) {
+
+}
+
+
 // Update the likes for a specific post
 async function updateLikes(page, postId, numLikes, type) {
 
@@ -82,6 +95,7 @@ async function updateLikes(page, postId, numLikes, type) {
   } else {
     // user like data
   const userLikeData = {
+      page: page,
       postId: postId,
       type: type
   }
@@ -111,4 +125,4 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-export { createPost, updateLikes };
+export { createPost, updateLikes, editPost, deletePost };
