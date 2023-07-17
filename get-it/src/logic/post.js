@@ -3,7 +3,6 @@ import { getAuth } from "firebase/auth";
 import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
-
     const post = {
       title: title,
       owner: owner,
@@ -54,22 +53,6 @@ async function editPost(page, postId, newTitle, newContent) {
     console.error('Error updating post: ', error);
   });
 }
-
-async function clearLikeHistory(page) {
-  // Get a reference to the user
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const owner = user.email;
-  const userRef = doc(db, "users", owner);
-
-   // Get user like history, find if user has liked the post before
-   const likesCollectionRef = collection(userRef, "likes");
-   const querySnapshotLikes = await getDocs(likesCollectionRef);
-
-   // Get all the posts on a particular page
-   const querySnapshotPosts = await getDocs(collection(db, `${page}Posts`));
-}
-
 
 // Update the likes for a specific post
 async function updateLikes(page, postId, numLikes, type) {

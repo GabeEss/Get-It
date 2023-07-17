@@ -4,9 +4,10 @@ import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
 import { editPost } from "../../logic/post";
 import { editComment } from "../../logic/comment";
+import { useParams } from "react-router-dom";
 
 const EditPost = () => {
-    // If this form is open, the value within the edit prop should be the postId
+    // If this form is open, the value within the edit hook should be the postId
     const {edit, setEdit} = useContext(EditContext); 
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
@@ -28,7 +29,6 @@ const EditPost = () => {
     };
 
     async function handleEditPost() {
-        console.log(currentPage);
         if(edit) { 
             await editPost(currentPage, edit, title, content);
             setRefresh(!refreshPosts);
@@ -66,29 +66,25 @@ const EditPost = () => {
 }
 
 const EditComment = () => {
-    // If this form is open, the value within the edit prop should be the commentId
-    const {edit, setEdit} = useContext(EditContext); 
-
-    const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    // If this form is open, the value within the edit hook should be the commentId
+    const {editComment, setEditComment} = useContext(EditContext);
+    const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
+    const {page, id} = useParams(); // Get the page and postId from the url
 
     const onClose = () => {
-        setTitle("");
         setContent("");
-        setEdit(null);
+        setEditComment(null);
     }
-
-    const handleTitleChange = (event) => {
-        setTitle(event.target.value);
-    };
 
     const handleContentChange = (event) => {
         setContent(event.target.value);
     };
 
-    const handleEditComment = async () => {
-        if(edit) { 
-            
+    async function handleEditComment() {
+        if(editComment) { 
+            await editComment(page, id, editComment, content);
+            setRefresh(!refreshPosts);
             onClose();
         }
     }
@@ -97,15 +93,6 @@ const EditComment = () => {
         <div className="editpost popup">
             <h2>Edit Comment</h2>
             <form onSubmit={handleEditComment}>
-                <input
-                type="text"
-                value={title}
-                onChange={handleTitleChange}
-                placeholder="Title..."
-                maxLength={200}
-                required
-                className="login-field"
-                />
                 <input
                 type="textarea"
                 value={content}

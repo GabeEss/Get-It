@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { auth, db } from "../../../firebase";
+import { db } from "../../../firebase";
 import { doc, getDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateLikes } from "../../../logic/post";
-import { addComment, updateCommentLikes } from "../../../logic/comment";
-import { onAuthStateChanged } from "firebase/auth";
+import { addComment, updateCommentLikes, deleteComment } from "../../../logic/comment";
+import { deletePost } from "../../../logic/post";
 import { UserContext } from "../../../contexts/UserContext";
+import { EditContext } from "../../../contexts/EditPostContext";
+import { EditCommentContext } from "../../../contexts/EditCommentContext";
 
 
 const DisplayPost = () => {
@@ -18,6 +20,8 @@ const DisplayPost = () => {
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
     const {user} = useContext(UserContext); // if the user is logged in
+    const {setEdit} = useContext(EditContext); // Controls the edit form pop up on the post
+    const {setEditComment} = useContext(EditCommentContext); // Controls the edit form pop up on the comment
 
     const handleGoBack = () => {
         navigate(`/${page}`);
@@ -53,8 +57,7 @@ const DisplayPost = () => {
       }, []);
   
       useEffect(() => {
-        if(count !== 1)
-          setCount(1);
+        handleCommentData();
       }, [newCommentRefresh])
   
       useEffect(() => {
@@ -251,12 +254,32 @@ const DisplayPost = () => {
         setPost(updatedPost);
       };
 
-      const handleEdit = (postId, commentId) => {
-
+      const handleEdit = (commentId) => {
+        if(commentId) {
+          // Edit the comment.
+          setEditComment(commentId);
+        } else {
+          // Edit the post.
+          setEdit(id);
+        }
       }
 
-      const handleDelete = (postId, commentId) => {
-
+      const handleDelete = async (commentId) => {
+        if(commentId) {
+          // Delete the comment.
+          const confirmation = window.confirm("Are you sure you want to delete?");
+          if (confirmation) {
+            await deleteComment(page, id, commentId);
+            setRefreshComments(!newCommentRefresh);
+          }
+        } else {
+          // Delete the post.
+          const confirmation = window.confirm("Are you sure you want to delete?");
+          if (confirmation) {
+            await deletePost(page, id);
+            handleGoBack();
+          }
+        }
       }
     
       return (
@@ -279,20 +302,20 @@ const DisplayPost = () => {
                 onClick={() => { handleDislike(id, post.likes);}}
                 >Dislike</button>
               </p>
-              {user ? 
-                  <div className="post post-owner">
-                  <button className={`editbutton ${user.email === post.owner ? "" : "disabled"}`}
-                  onClick={() => {
-                    handleEdit();
-                  }}>Edit</button>
-                  <button className={`deletebutton ${user.email === post.owner ? "" : "disabled"}`}
-                  onClick={() => {
-                    handleDelete();
-                  }}>Delete</button>
+              {user && user.email === comment.owner ? 
+                  <div className="post edit-delete">
+                    <button className={`editbutton ${user.email === post.owner ? "" : "disabled"}`}
+                    onClick={() => {
+                      handleEdit();
+                    }}>Edit</button>
+                    <button className={`deletebutton ${user.email === post.owner ? "" : "disabled"}`}
+                    onClick={() => {
+                      handleDelete();
+                    }}>Delete</button>
                 </div>
               : ""}
               <button onClick={handleGoBack}>Go Back</button>
-              {user ? 
+              {user && post.owner !== "" ? 
                 <div className="post comment-area">
                     <textarea
                       className={`comment-textarea ${!user ? "disabled" : ""}`}
@@ -319,8 +342,19 @@ const DisplayPost = () => {
                                 handleDislike(id, comment.likes, comment.commentid);
                             }}>Dislike
                           </button>
-                          <button>Edit Comment</button>
-                          <button>Delete Comment</button>
+                          {user && user.email === comment.owner ? 
+                            <div className="edit-delete">
+                              <button className={`editbutton ${user.email === comment.owner ? "" : "disabled"}`}
+                              onClick={() => {
+                                handleEdit(comment.commentid);
+                              }}>Edit</button>
+                              <button className={`deletebutton ${user.email === comment.owner ? "" : "disabled"}`}
+                              onClick={() => {
+                                handleDelete(comment.commentid);
+                              }}>Delete</button>
+                            </div>
+                          : ""}
+                          
                         </div>
                     )) : ""}
                 </div>

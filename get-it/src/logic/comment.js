@@ -28,28 +28,33 @@ async function addComment(page, postId, content, time) {
       const commentsCollectionRef = collection(postRef, "comments");
       const newCommentRef = await addDoc(commentsCollectionRef, comment);
       const commentId = newCommentRef.id;
-      console.log('Comment added successfully with ID:', commentId);
+    //   console.log('Comment added successfully with ID:', commentId);
     } catch (error) {
       console.error('Error adding comment: ', error);
     }
   }
 
   async function deleteComment(page, postId, commentId) {
-    // Get a reference to the specific comment
     const commentRef = doc(db, `${page}Posts/${postId}/comments`, commentId);
+  
     await updateDoc(commentRef, {
-        title: "[deleted]",
-        content: "[deleted]"
+      content: "[deleted]",
+      nickname: "[deleted]",
+      owner: ""
     })
+    .then(() => {
+      // console.log('Post deleted successfully');
+    })
+    .catch((error) => {
+      console.error('Error updating post: ', error);
+    });
   }
   
   async function editComment(page, postId, commentId, newTitle, newContent) {
-    // Get a reference to the specific comment
     const commentRef = doc(db, `${page}Posts/${postId}/comments`, commentId);
   
     await updateDoc(commentRef, {
-      title: newTitle,
-      content: newContent
+      content: `${newContent} (edited)`,
     })
     .then(() => {
       // console.log('Post updated successfully');

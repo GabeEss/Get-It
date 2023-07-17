@@ -14,6 +14,7 @@ import { LoginProvider } from "./contexts/LoginScreenContext";
 import { ResetPasswordProvider } from "./contexts/ResetPasswordContext";
 import { RefreshPostsProvider } from "./contexts/RefreshPostsContext";
 import { EditProvider } from "./contexts/EditPostContext";
+import { EditCommentProvider } from "./contexts/EditCommentContext";
 
 function App() {
   return (
@@ -26,14 +27,16 @@ function App() {
                 <RefreshPostsProvider>
                     <SearchProvider>
                       <EditProvider>
-                        <Routes>
-                          <Route path="/" element={<Homepage />} />
-                          <Route path="/gaming" element={<Gamingpage />} />
-                          <Route path="/business" element={<Businesspage />} />
-                          <Route path="/television" element={<Televisionpage />} />
-                          <Route path=":page/:title/:id" element={<Postpage />} />
-                          <Route path="/account" element={<Accountpage />} />
-                        </Routes>
+                        <EditCommentProvider>
+                          <Routes>
+                            <Route path="/" element={<Homepage />} />
+                            <Route path="/gaming" element={<Gamingpage />} />
+                            <Route path="/business" element={<Businesspage />} />
+                            <Route path="/television" element={<Televisionpage />} />
+                            <Route path=":page/:title/:id" element={<Postpage />} />
+                            <Route path="/account" element={<Accountpage />} />
+                          </Routes>
+                        </EditCommentProvider>
                       </EditProvider>
                     </SearchProvider>
                   </RefreshPostsProvider>

@@ -1,9 +1,8 @@
 import React, {useState, useEffect, useContext} from "react";
-import { auth, db } from "../../../firebase";
+import { db } from "../../../firebase";
 import { collection, getDocs} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost } from "../../../logic/post";
-import { onAuthStateChanged } from "firebase/auth";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
@@ -15,7 +14,7 @@ const DisplayPosts = () => {
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const [isLoading, setIsLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
-    const {user } = useContext(UserContext);
+    const {user} = useContext(UserContext);
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
@@ -225,7 +224,7 @@ const DisplayPosts = () => {
                                     handleDislike(postItem.id, postItem.likes);
                                 }}>Dislike</button>
                             </p>
-                            {user ? 
+                            {user && user.email === postItem.owner ? 
                                 <div className="post post-owner">
                                 <button className={`editbutton ${user.email === postItem.owner ? "" : "disabled"}`}
                                 onClick={() => handleEdit(postItem.id)}>Edit</button>
