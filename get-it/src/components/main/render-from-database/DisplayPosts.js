@@ -17,7 +17,7 @@ const DisplayPosts = () => {
     const [user, setUser] = useState(null);
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
     const {currentPage} = useContext(CurrentPageContext);
-    const { refreshPosts } = useContext(RefreshPostsContext);
+    const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -204,10 +204,11 @@ const DisplayPosts = () => {
         setEdit(id);
       }
 
-      const handleDelete = (id) => {
+      const handleDelete = async (id) => {
         const confirmation = window.confirm("Are you sure you want to delete?");
         if (confirmation) {
-          deletePost(currentPage, id);
+          await deletePost(currentPage, id);
+          setRefresh(!refreshPosts);
         }
       }
 

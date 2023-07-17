@@ -29,7 +29,8 @@ async function deletePost(page, postId) {
   await updateDoc(postRef, {
     title: "[deleted]",
     content: "[deleted]",
-    owner: undefined
+    nickname: "[deleted]",
+    owner: ""
   })
   .then(() => {
     // console.log('Post deleted successfully');
