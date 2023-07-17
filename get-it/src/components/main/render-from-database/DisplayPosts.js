@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext, useCallback} from "react";
 import { auth, db } from "../../../firebase";
 import { collection, getDoc, getDocs, doc, query, limit, startAfter } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import { updateLikes, deletePost, editPost } from "../../../logic/post";
+import { updateLikes, deletePost } from "../../../logic/post";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { EditContext } from "../../../contexts/EditPostContext";
 

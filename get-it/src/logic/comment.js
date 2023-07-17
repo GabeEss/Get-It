@@ -33,6 +33,31 @@ async function addComment(page, postId, content, time) {
       console.error('Error adding comment: ', error);
     }
   }
+
+  async function deleteComment(page, postId, commentId) {
+    // Get a reference to the specific comment
+    const commentRef = doc(db, `${page}Posts/${postId}/comments`, commentId);
+    await updateDoc(commentRef, {
+        title: "[deleted]",
+        content: "[deleted]"
+    })
+  }
+  
+  async function editComment(page, postId, commentId, newTitle, newContent) {
+    // Get a reference to the specific comment
+    const commentRef = doc(db, `${page}Posts/${postId}/comments`, commentId);
+  
+    await updateDoc(commentRef, {
+      title: newTitle,
+      content: newContent
+    })
+    .then(() => {
+      // console.log('Post updated successfully');
+    })
+    .catch((error) => {
+      console.error('Error updating post: ', error);
+    });
+  }
   
   // Update the likes for a specific comment in the post
   async function updateCommentLikes(page, postId, commentId, numLikes, type) {
@@ -124,4 +149,4 @@ const updateNumberOfLikes = async (commentRef, numLikes, plusMinus) => {
     });
   }
 
-export { addComment, updateCommentLikes };
+export { addComment, updateCommentLikes, editComment, deleteComment };
