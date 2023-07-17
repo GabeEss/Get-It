@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { auth, db } from "../../../firebase";
 import { doc, getDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateLikes } from "../../../logic/post";
 import { addComment, updateCommentLikes } from "../../../logic/comment";
 import { onAuthStateChanged } from "firebase/auth";
+import { UserContext } from "../../../contexts/UserContext";
 
 
 const DisplayPost = () => {
@@ -16,24 +17,7 @@ const DisplayPost = () => {
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
-    const [user, setUser] = useState(null); // if the user is logged in
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in
-            setUser(user);
-        } else {
-            // User is signed out
-            setUser(null);
-        }
-        });
-
-        // Clean up the listener on unmount
-        return () => {
-            unsubscribe();
-        };
-    }, []);
+    const {user} = useContext(UserContext); // if the user is logged in
 
     const handleGoBack = () => {
         navigate(`/${page}`);

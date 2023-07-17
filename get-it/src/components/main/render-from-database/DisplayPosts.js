@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
+import { UserContext } from "../../../contexts/UserContext";
 
 const DisplayPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -14,27 +15,10 @@ const DisplayPosts = () => {
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const [isLoading, setIsLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const {user } = useContext(UserContext);
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in
-            setUser(user);
-        } else {
-            // User is signed out
-            setUser(null);
-        }
-        });
-
-        // Clean up the listener on unmount
-        return () => {
-            unsubscribe();
-        };
-    }, []);
 
     const loadPosts = async () => {
       const fetchData = async () => {
