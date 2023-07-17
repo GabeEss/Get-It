@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from "react";
-import { createPost } from "../../../logic/post";
+import React, {useState, useEffect, useContext} from "react";
+import { createPost } from "../../logic/post";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { auth } from "../../../firebase";
+import { auth } from "../../firebase";
 import { serverTimestamp } from "firebase/firestore";
-import DisplayPosts from "./DisplayPosts";
-import { useParams } from "react-router-dom";
+import { CurrentPageContext } from "../../contexts/CurrentPageContext";
+import DisplayPosts from "./render-from-database/DisplayPosts";
 
 // When making a new page, you only need to change the function name and the page variable.
-const BusinessDB = () => {
-    const {page} = useParams();
+const CreatePost = () => {
+    const {currentPage} = useContext(CurrentPageContext);
     const [newPost, setPost] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -50,7 +50,7 @@ const BusinessDB = () => {
         
         if(user) {
             // This will add the post to a collection of all posts related to this page.
-            const postID = await createPost(owner, title, content, page, time, nickname);
+            const postID = await createPost(owner, title, content, currentPage, time, nickname);
             setRefresh(!refreshPosts);
         }
         onClose();
@@ -90,9 +90,9 @@ const BusinessDB = () => {
         <div>
             {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null}
             {newPost ? newPostForm() : null}
-            <DisplayPosts page={page} refreshPosts={refreshPosts}/>
+            <DisplayPosts page={currentPage} refreshPosts={refreshPosts}/>
         </div>
     )
 }
 
-export default BusinessDB;
+export default CreatePost;

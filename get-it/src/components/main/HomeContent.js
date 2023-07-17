@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useEffect, useContext} from "react";
 import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
@@ -8,11 +8,9 @@ import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
 import { EditPost } from "./EditPost";
-import BusinessDB from "./render-from-database/BusinessDB";
-import GamingDB from "./render-from-database/GamingDB";
 import HomeDB from "./render-from-database/HomeDB";
-import TelevisionDB from "./render-from-database/TelevisionDB";
 import DisplayPost from "./render-from-database/DisplayPost";
+import CreatePost from "./CreatePost";
 
 const HomeContent = () => {
     const {login} = useContext(LoginContext); // if user clicked login, show component
@@ -39,11 +37,11 @@ const HomeContent = () => {
     const renderContent = () => {
         switch (currentPage) {
             case "business":
-                return <BusinessDB />;
+                return <CreatePost/>
             case "gaming":
-                return <GamingDB />;
+                return <CreatePost/>
             case "television":
-                return <TelevisionDB />;
+                return <CreatePost/>
             case "post":
                 return <DisplayPost/>
             case "home":
