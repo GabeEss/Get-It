@@ -51,7 +51,7 @@ const CreatePost = () => {
         
         if(user) {
             // This will add the post to a collection of all posts related to this page.
-            const postID = await createPost(owner, title, content, currentPage, time, nickname);
+            await createPost(owner, title, content, currentPage, time, nickname);
             setRefresh(!refreshPosts);
         }
         onClose();
@@ -91,7 +91,7 @@ const CreatePost = () => {
         <div>
             {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null}
             {newPost ? newPostForm() : null}
-            <DisplayPosts page={currentPage} refreshPosts={refreshPosts}/>
+            <DisplayPosts/>
         </div>
     )
 }

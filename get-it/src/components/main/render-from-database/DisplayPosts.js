@@ -12,7 +12,6 @@ const DisplayPosts = () => {
     const [posts, setPosts] = useState([]);
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
-    const [lastPost, setLastPost] = useState(null); // Track the last post retrieved
     const [isLoading, setIsLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
