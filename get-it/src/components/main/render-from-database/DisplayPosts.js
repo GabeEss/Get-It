@@ -1,12 +1,14 @@
-import React, {useState, useEffect, useContext, useCallback} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { auth, db } from "../../../firebase";
-import { collection, getDoc, getDocs, doc, query, limit, startAfter } from "firebase/firestore";
+import { collection, getDocs} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost } from "../../../logic/post";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { EditContext } from "../../../contexts/EditPostContext";
+import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
+import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
 
-const DisplayPosts = ({page, refreshPosts}) => {
+const DisplayPosts = () => {
     const [posts, setPosts] = useState([]);
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
@@ -15,6 +17,8 @@ const DisplayPosts = ({page, refreshPosts}) => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
+    const {currentPage} = useContext(CurrentPageContext);
+    const { refreshPosts } = useContext(RefreshPostsContext);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,51 +37,10 @@ const DisplayPosts = ({page, refreshPosts}) => {
         };
     }, []);
 
-
-
-    // const loadPosts = useCallback(async () => {
-    //   try {
-    //     setIsLoading(true);
-  
-    //     // Construct the Firestore query for pagination
-    //     let postsQuery = query(collection(db, `${page}Posts`));
-  
-    //     // If lastPost exists, set the query to start after it
-    //     if (lastPost) {
-    //       postsQuery = query(postsQuery, startAfter(lastPost));
-    //     }
-  
-    //     // Limit the number of posts retrieved per page
-    //     postsQuery = query(postsQuery, limit(10));
-  
-    //     const querySnapshot = await getDocs(postsQuery);
-    //     const postData = querySnapshot.docs.map((doc) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //     }));
-  
-    //     // Set the last post for pagination
-    //     const lastVisiblePost = querySnapshot.docs[querySnapshot.docs.length - 1];
-    //     setLastPost(lastVisiblePost);
-  
-    //     // Append or replace the posts based on the pagination
-    //     if (lastPost) {
-    //       setPosts((prevPosts) => [...prevPosts, ...postData]);
-    //     } else {
-    //       setPosts(postData);
-    //     }
-  
-    //     setIsLoading(false);
-    //   } catch (error) {
-    //     console.error("Error fetching posts: ", error);
-    //   }
-    // }, [lastPost, page]);
-
-
     const loadPosts = async () => {
       const fetchData = async () => {
         try {
-          const querySnapshot = await getDocs(collection(db, `${page}Posts`));
+          const querySnapshot = await getDocs(collection(db, `${currentPage}Posts`));
           const postData = querySnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
@@ -137,7 +100,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
       };
    
     const handleClick = (title, id) => {
-        navigate(`/${page}/${title}/${id}`);
+        navigate(`/${currentPage}/${title}/${id}`);
     }
 
     const handleLike = async (id, likesNum) => {
@@ -145,7 +108,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
 
         setNoClick(true);
 
-        const prevExistingLike = await updateLikes(page, id, likesNum, type);
+        const prevExistingLike = await updateLikes(currentPage, id, likesNum, type);
 
         // Update the local display without calling firestore.
         if(prevExistingLike) {
@@ -160,7 +123,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
 
         setNoClick(true);
 
-        const prevExistingLike = await updateLikes(page, id, likesNum, type);
+        const prevExistingLike = await updateLikes(currentPage, id, likesNum, type);
 
         // Update the local display without calling firestore.
         if(prevExistingLike) {
@@ -256,7 +219,7 @@ const DisplayPosts = ({page, refreshPosts}) => {
       }
 
       const handleDelete = (postId) => {
-        deletePost(page, postId);
+        
       }
 
     return(

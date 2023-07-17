@@ -4,15 +4,16 @@ import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "../../firebase";
 import { serverTimestamp } from "firebase/firestore";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
+import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
 import DisplayPosts from "./render-from-database/DisplayPosts";
 
 // When making a new page, you only need to change the function name and the page variable.
 const CreatePost = () => {
     const {currentPage} = useContext(CurrentPageContext);
+    const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
     const [newPost, setPost] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [refreshPosts, setRefresh] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {

@@ -3,11 +3,13 @@ import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { editPost } from "../../logic/post";
 import { editComment } from "../../logic/comment";
+import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
 
 const EditPost = () => {
     // If this form is open, the value within the edit prop should be the postId
     const {edit, setEdit} = useContext(EditContext); 
     const {currentPage} = useContext(CurrentPageContext);
+    const { refreshPosts, setRefresh } = useContext(RefreshPostsContext);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
@@ -29,6 +31,7 @@ const EditPost = () => {
         console.log(currentPage);
         if(edit) { 
             await editPost(currentPage, edit, title, content);
+            setRefresh(!refreshPosts);
             onClose();
         }
     }
