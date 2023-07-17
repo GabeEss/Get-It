@@ -25,14 +25,25 @@ async function createPost(owner, title, content, page, time, nickname) {
 
 async function deletePost(page, postId) {
   const postRef = doc(db, `${page}Posts`, postId);
-  await deleteDoc(postRef);
+
+  await updateDoc(postRef, {
+    title: "[deleted]",
+    content: "[deleted]",
+    owner: undefined
+  })
+  .then(() => {
+    // console.log('Post deleted successfully');
+  })
+  .catch((error) => {
+    console.error('Error updating post: ', error);
+  });
 }
 
 async function editPost(page, postId, newTitle, newContent) {
   const postRef = doc(db, `${page}Posts`, postId);
 
   await updateDoc(postRef, {
-    title: newTitle,
+    title: `${newTitle} (edited)`,
     content: newContent
   })
   .then(() => {

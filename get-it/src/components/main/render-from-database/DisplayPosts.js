@@ -38,6 +38,7 @@ const DisplayPosts = () => {
 
     const loadPosts = async () => {
       const fetchData = async () => {
+        setIsLoading(true);
         try {
           const querySnapshot = await getDocs(collection(db, `${currentPage}Posts`));
           const postData = querySnapshot.docs.map((doc) => ({
@@ -54,6 +55,7 @@ const DisplayPosts = () => {
       if(count === 1) {
         console.log("Firebase called.");
         await fetchData();
+        setIsLoading(false);
         setCount(0);
       }
     }
@@ -198,27 +200,15 @@ const DisplayPosts = () => {
         setPosts(updatedPosts);
       }
 
-      const handleLocalizedEdit = (postId, title, content) => {
-        const updatedPosts = posts.map((postItem) => {
-          if (postItem.id === postId) {
-                return {
-                  ...postItem,
-                  title: title,
-                  content: content
-                };
-              }
-          // If no post found, return the previous item unaltered.
-          return postItem;
-        });
-        setPosts(updatedPosts);
+      const handleEdit = (id) => {
+        setEdit(id);
       }
 
-      const handleEditClick = (postId) => {
-        setEdit(postId);
-      }
-
-      const handleDelete = (postId) => {
-        
+      const handleDelete = (id) => {
+        const confirmation = window.confirm("Are you sure you want to delete?");
+        if (confirmation) {
+          deletePost(currentPage, id);
+        }
       }
 
     return(
@@ -253,13 +243,9 @@ const DisplayPosts = () => {
                             {user ? 
                                 <div className="post post-owner">
                                 <button className={`editbutton ${user.email === postItem.owner ? "" : "disabled"}`}
-                                onClick={() => {
-                                  handleEditClick(postItem.id);
-                                }}>Edit</button>
+                                onClick={() => handleEdit(postItem.id)}>Edit</button>
                                 <button className={`deletebutton ${user.email === postItem.owner ? "" : "disabled"}`}
-                                onClick={() => {
-                                  
-                                }}>Delete</button>
+                                onClick={() => handleDelete(postItem.id)}>Delete</button>
                               </div>
                             : ""}
                         </li>

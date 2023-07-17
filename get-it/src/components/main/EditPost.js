@@ -27,7 +27,7 @@ const EditPost = () => {
         setContent(event.target.value);
     };
 
-    const handleEditPost = async () => {
+    async function handleEditPost() {
         console.log(currentPage);
         if(edit) { 
             await editPost(currentPage, edit, title, content);
