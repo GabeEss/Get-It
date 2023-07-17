@@ -8,6 +8,7 @@ import { deletePost } from "../../../logic/post";
 import { UserContext } from "../../../contexts/UserContext";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { EditCommentContext } from "../../../contexts/EditCommentContext";
+import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
 
 
 const DisplayPost = () => {
@@ -22,6 +23,7 @@ const DisplayPost = () => {
     const {user} = useContext(UserContext); // if the user is logged in
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up on the post
     const {setEditComment} = useContext(EditCommentContext); // Controls the edit form pop up on the comment
+    const {refreshPosts} = useContext(RefreshPostsContext); // Update comments when a comment is edited or deleted
 
     const handleGoBack = () => {
         navigate(`/${page}`);
@@ -59,6 +61,10 @@ const DisplayPost = () => {
       useEffect(() => {
         handleCommentData();
       }, [newCommentRefresh])
+
+      useEffect(() => {
+        setRefreshComments(!newCommentRefresh);
+      }, [refreshPosts])
   
       useEffect(() => {
         loadPost();
