@@ -50,7 +50,7 @@ async function addComment(page, postId, content, time) {
     });
   }
   
-  async function editComment(page, postId, commentId, newTitle, newContent) {
+  async function editCommentInFirestore(page, postId, commentId, newContent) {
     const commentRef = doc(db, `${page}Posts/${postId}/comments`, commentId);
   
     await updateDoc(commentRef, {
@@ -154,4 +154,4 @@ const updateNumberOfLikes = async (commentRef, numLikes, plusMinus) => {
     });
   }
 
-export { addComment, updateCommentLikes, editComment, deleteComment };
+export { addComment, updateCommentLikes, editCommentInFirestore, deleteComment };

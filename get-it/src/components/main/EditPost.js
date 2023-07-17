@@ -1,9 +1,10 @@
 import React, {useState, useContext} from "react";
 import { EditContext } from "../../contexts/EditPostContext";
+import { EditCommentContext } from "../../contexts/EditCommentContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
 import { editPost } from "../../logic/post";
-import { editComment } from "../../logic/comment";
+import { editCommentInFirestore } from "../../logic/comment";
 import { useParams } from "react-router-dom";
 
 const EditPost = () => {
@@ -68,7 +69,7 @@ const EditPost = () => {
 const EditComment = () => {
     const [content, setContent] = useState("");
     // If this form is open, the value within the edit hook should be the commentId
-    const {editComment, setEditComment} = useContext(EditContext);
+    const {editComment, setEditComment} = useContext(EditCommentContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
     const {page, id} = useParams(); // Get the page and postId from the url
 
@@ -83,7 +84,7 @@ const EditComment = () => {
 
     async function handleEditComment() {
         if(editComment) { 
-            await editComment(page, id, editComment, content);
+            await editCommentInFirestore(page, id, editComment, content);
             setRefresh(!refreshPosts);
             onClose();
         }
