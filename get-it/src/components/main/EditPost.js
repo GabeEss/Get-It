@@ -1,14 +1,13 @@
 import React, {useState, useContext} from "react";
 import { EditContext } from "../../contexts/EditPostContext";
-import { useParams } from "react-router-dom";
+import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { editPost } from "../../logic/post";
 import { editComment } from "../../logic/comment";
 
 const EditPost = () => {
     // If this form is open, the value within the edit prop should be the postId
     const {edit, setEdit} = useContext(EditContext); 
-    // Get the page from the url
-    const {page} = useParams();
+    const {currentPage} = useContext(CurrentPageContext);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
@@ -27,8 +26,9 @@ const EditPost = () => {
     };
 
     const handleEditPost = async () => {
+        console.log(currentPage);
         if(edit) { 
-            await editPost(page, edit, title, content);
+            await editPost(currentPage, edit, title, content);
             onClose();
         }
     }
@@ -65,8 +65,6 @@ const EditPost = () => {
 const EditComment = () => {
     // If this form is open, the value within the edit prop should be the commentId
     const {edit, setEdit} = useContext(EditContext); 
-    // Get the page and postId from the url
-    const {page, id} = useParams();
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");

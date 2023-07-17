@@ -3,6 +3,7 @@ import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { EditContext } from "../../contexts/EditPostContext";
+import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
@@ -18,7 +19,8 @@ const HomeContent = () => {
     const {signup} = useContext(SignUpContext); // if user clicked signup, show component
     const {reset} = useContext(ResetPasswordContext); // if user clicked reset password, show component
     const {edit} = useContext(EditContext); // if user clicked on the edit post or edit comment button
-    const [currentPage, setCurrentPage] = useState("home");
+    const { currentPage, setCurrentPage } = useContext(CurrentPageContext);
+   
 
     // Sets the current page
     useEffect(() => {

@@ -4,10 +4,11 @@ import { onAuthStateChanged, getAuth } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { serverTimestamp } from "firebase/firestore";
 import DisplayPosts from "./DisplayPosts";
+import { useParams } from "react-router-dom";
 
 // When making a new page, you only need to change the function name and the page variable.
 const TelevisionDB = () => {
-    const page = "television";
+    const {page} = useParams();
     const [newPost, setPost] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
