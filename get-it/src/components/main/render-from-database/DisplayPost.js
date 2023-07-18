@@ -8,14 +8,15 @@ import { deletePost } from "../../../logic/post";
 import { UserContext } from "../../../contexts/UserContext";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { EditCommentContext } from "../../../contexts/EditCommentContext";
-import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
+import { RefreshCommentsContext } from "../../../contexts/RefreshCommentsContext";
 
 
 const DisplayPost = () => {
     const [post, setPost] = useState(null); // hold the post to be displayed
     const [commentData, setCommentData] = useState(null); // holds the commentData to be displayed
-    const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
-    const [newCommentRefresh, setRefreshComments] = useState(false); // so that useEffect can refresh when a new comment is made
+    const [count, setCount] = useState(0); // This state helps control the number of times firebase is called to get the post.
+    const [commentCount, setCommentCount] = useState(0); // This state helps control the number of times firebase is called to get the comments.
+    const {refreshComments, setRefreshComments} = useContext(RefreshCommentsContext); // so that useEffect can refresh when a new comment is made
     const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
     const { page, id } = useParams(); // get the page and post id from the url
@@ -23,7 +24,6 @@ const DisplayPost = () => {
     const {user} = useContext(UserContext); // if the user is logged in
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up on the post
     const {setEditComment} = useContext(EditCommentContext); // Controls the edit form pop up on the comment
-    const {refreshPosts} = useContext(RefreshPostsContext); // Update comments when a comment is edited or deleted
 
     const handleGoBack = () => {
         navigate(`/${page}`);
@@ -50,6 +50,31 @@ const DisplayPost = () => {
           setCount(0);
         }
       }
+
+      const handleCommentData = async () => {
+        const fetchComments = async () => {
+          try {
+            const postRef = doc(db, `${page}Posts`, id);
+            const commentsCollectionRef = collection(postRef, "comments");
+            // Retrieve comments for the post
+            const querySnapshot = await getDocs(commentsCollectionRef);
+            // Add the comment id into the commentData state.
+            const comments = querySnapshot.docs.map((doc) => 
+            ({
+              ...doc.data(),
+              commentid: doc.id
+            }));
+            setCommentData(comments);
+          } catch (error) {
+            console.error("Error fetching comments: ", error);
+          }
+        }
+        if(commentCount === 1) {
+          console.log("Firebase called.");
+          await fetchComments();
+          setCommentCount(0);
+        }
+      }
         
   
       // On load control the number of times firebase is called by altering setCount.
@@ -59,16 +84,17 @@ const DisplayPost = () => {
       }, []);
   
       useEffect(() => {
-        handleCommentData();
-      }, [newCommentRefresh])
-
-      useEffect(() => {
-        setRefreshComments(!newCommentRefresh);
-      }, [refreshPosts])
+        if(commentCount !== 1)
+          setCommentCount(1);
+      }, [refreshComments])
   
       useEffect(() => {
         loadPost();
       }, [count])
+
+      useEffect(() => {
+        handleCommentData();
+      }, [commentCount])
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -138,25 +164,8 @@ const DisplayPost = () => {
         const time = serverTimestamp();
         await addComment(page, id, content, time);
         setComment("");
-        setRefreshComments(!newCommentRefresh);
+        setRefreshComments(!refreshComments);
       }
-
-      const handleCommentData = async () => {
-        const postRef = doc(db, `${page}Posts`, id);
-        const commentsCollectionRef = collection(postRef, "comments");
-
-        // Retrieve comments for the post
-        const querySnapshot = await getDocs(commentsCollectionRef);
-
-        // Add the comment id into the commentData state.
-        const comments = querySnapshot.docs.map((doc) => 
-        ({
-          ...doc.data(),
-          commentid: doc.id
-        }));
-        setCommentData(comments);
-      }
-
 
       // When the user likes a comment they have liked before.
       const handleLocalizedCommentLike = (id, likesNum, type, prevExistingLike) => {
@@ -276,7 +285,7 @@ const DisplayPost = () => {
           const confirmation = window.confirm("Are you sure you want to delete?");
           if (confirmation) {
             await deleteComment(page, id, commentId);
-            setRefreshComments(!newCommentRefresh);
+            setRefreshComments(!refreshComments);
           }
         } else {
           // Delete the post.

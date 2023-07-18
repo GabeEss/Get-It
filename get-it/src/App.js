@@ -13,6 +13,7 @@ import { UserProvider } from "./contexts/UserContext";
 import { LoginProvider } from "./contexts/LoginScreenContext";
 import { ResetPasswordProvider } from "./contexts/ResetPasswordContext";
 import { RefreshPostsProvider } from "./contexts/RefreshPostsContext";
+import { RefreshCommentsProvider } from "./contexts/RefreshCommentsContext";
 import { EditProvider } from "./contexts/EditPostContext";
 import { EditCommentProvider } from "./contexts/EditCommentContext";
 
@@ -25,20 +26,22 @@ function App() {
             <SignUpProvider>
               <ResetPasswordProvider>
                 <RefreshPostsProvider>
-                    <SearchProvider>
-                      <EditProvider>
-                        <EditCommentProvider>
-                          <Routes>
-                            <Route path="/" element={<Homepage />} />
-                            <Route path="/gaming" element={<Gamingpage />} />
-                            <Route path="/business" element={<Businesspage />} />
-                            <Route path="/television" element={<Televisionpage />} />
-                            <Route path=":page/:title/:id" element={<Postpage />} />
-                            <Route path="/account" element={<Accountpage />} />
-                          </Routes>
-                        </EditCommentProvider>
-                      </EditProvider>
-                    </SearchProvider>
+                  <RefreshCommentsProvider>
+                      <SearchProvider>
+                        <EditProvider>
+                          <EditCommentProvider>
+                            <Routes>
+                              <Route path="/" element={<Homepage />} />
+                              <Route path="/gaming" element={<Gamingpage />} />
+                              <Route path="/business" element={<Businesspage />} />
+                              <Route path="/television" element={<Televisionpage />} />
+                              <Route path=":page/:title/:id" element={<Postpage />} />
+                              <Route path="/account" element={<Accountpage />} />
+                            </Routes>
+                          </EditCommentProvider>
+                        </EditProvider>
+                      </SearchProvider>
+                    </RefreshCommentsProvider>
                   </RefreshPostsProvider>
               </ResetPasswordProvider>
             </SignUpProvider>

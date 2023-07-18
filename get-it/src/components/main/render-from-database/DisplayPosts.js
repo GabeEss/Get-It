@@ -195,6 +195,10 @@ const DisplayPosts = () => {
         }
       }
 
+      const handleSort = () => {
+
+      }
+
     return(
         <div>
             {isLoading ? 
@@ -202,6 +206,12 @@ const DisplayPosts = () => {
             : posts.length === 0 ? (
                 <p>Be the first to write a post...</p>
                 ) : (
+                <div>
+                    <div>
+                      <button onClick={handleSort()}>Top</button>
+                      <button onClick={handleSort()}>New</button>
+                      <button onClick={handleSort()}>Old</button>
+                    </div>
                     <ol className="post-list">
                     {posts.map((postItem) => (
                         <li className="post-item" key={postItem.id}>
@@ -235,6 +245,7 @@ const DisplayPosts = () => {
                         </li>
                     ))}
                     </ol>
+                  </div>
             )}
         </div>
     )

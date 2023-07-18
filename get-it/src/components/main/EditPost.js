@@ -6,6 +6,7 @@ import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
 import { editPost } from "../../logic/post";
 import { editCommentInFirestore } from "../../logic/comment";
 import { useParams } from "react-router-dom";
+import { RefreshCommentsContext } from "../../contexts/RefreshCommentsContext";
 
 const EditPost = () => {
     // If this form is open, the value within the edit hook should be the postId
@@ -70,7 +71,7 @@ const EditComment = () => {
     const [content, setContent] = useState("");
     // If this form is open, the value within the edit hook should be the commentId
     const {editComment, setEditComment} = useContext(EditCommentContext);
-    const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
+    const {refreshComments, setRefreshComments} = useContext(RefreshCommentsContext);
     const {page, id} = useParams(); // Get the page and postId from the url
 
     const onClose = () => {
@@ -85,7 +86,7 @@ const EditComment = () => {
     async function handleEditComment() {
         if(editComment) { 
             await editCommentInFirestore(page, id, editComment, content);
-            setRefresh(!refreshPosts);
+            setRefreshComments(!refreshComments);
             onClose();
         }
     }
