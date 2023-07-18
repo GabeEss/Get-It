@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../../firebase";
-import { doc, getDoc, getDocs, collection, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, serverTimestamp, query, orderBy } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateLikes } from "../../../logic/post";
 import { addComment, updateCommentLikes, deleteComment } from "../../../logic/comment";
@@ -16,14 +16,15 @@ const DisplayPost = () => {
     const [commentData, setCommentData] = useState(null); // holds the commentData to be displayed
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called to get the post.
     const [commentCount, setCommentCount] = useState(0); // This state helps control the number of times firebase is called to get the comments.
-    const {refreshComments, setRefreshComments} = useContext(RefreshCommentsContext); // so that useEffect can refresh when a new comment is made
     const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
+    const [sortOption, setSortOption] = useState("new"); // Track sorting state
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
     const {user} = useContext(UserContext); // if the user is logged in
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up on the post
     const {setEditComment} = useContext(EditCommentContext); // Controls the edit form pop up on the comment
+    const {refreshComments, setRefreshComments} = useContext(RefreshCommentsContext); // so that useEffect can refresh when a new comment is made
 
     const handleGoBack = () => {
         navigate(`/${page}`);
@@ -340,9 +341,16 @@ const DisplayPost = () => {
                       value={comment}
                     ></textarea>
                     <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
-                    {commentData ? "" : <div onClick={() => {
-                      setRefreshComments(!refreshComments);
-                    }}>Comments...</div>}
+                    {commentData ?
+                    <div className="sort buttons">
+                      <button onClick={() => setSortOption("top")}>Top</button>
+                      <button onClick={() => setSortOption("new")}>New</button>
+                      <button onClick={() => setSortOption("old")}>Old</button>
+                    </div> :
+                    <div onClick={() => {
+                        setRefreshComments(!refreshComments);
+                      }}>Comments...
+                    </div>}
                     {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content">
                           <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
@@ -378,7 +386,16 @@ const DisplayPost = () => {
                 </div>
               : 
               <div className="post non-user">
-                {commentData ? "" : <div onClick={handleCommentData}>Comments...</div>}
+                {commentData ? 
+                <div className="sort buttons">
+                      <button onClick={() => setSortOption("top")}>Top</button>
+                      <button onClick={() => setSortOption("new")}>New</button>
+                      <button onClick={() => setSortOption("old")}>Old</button>
+                  </div> : 
+                <div onClick={() => {
+                      setRefreshComments(!refreshComments);
+                    }}>Comments...
+                  </div>}
                 {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content">
                           <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { db } from "../../../firebase";
-import { collection, getDocs} from "firebase/firestore";
+import { collection, getDocs, query, orderBy} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost } from "../../../logic/post";
 import { EditContext } from "../../../contexts/EditPostContext";
@@ -13,6 +13,7 @@ const DisplayPosts = () => {
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
     const [isLoading, setIsLoading] = useState(false); // Track loading state
+    const [sortOption, setSortOption] = useState("new"); // Track sorting state
     const navigate = useNavigate();
     const {user} = useContext(UserContext);
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
@@ -23,12 +24,22 @@ const DisplayPosts = () => {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          const querySnapshot = await getDocs(collection(db, `${currentPage}Posts`));
+          let querySnapshot;
+          if(sortOption === "new") {
+            querySnapshot = await getDocs(
+              query(collection(db, `${currentPage}Posts`), orderBy("time", "desc")))
+          } else if(sortOption === "old") {
+            querySnapshot = await getDocs(
+              query(collection(db, `${currentPage}Posts`), orderBy("time", "asc")))
+          } else {
+            querySnapshot = await getDocs(
+              query(collection(db, `${currentPage}Posts`), orderBy("likes", "desc")))
+          }
+          // const querySnapshot = await getDocs(collection(db, `${currentPage}Posts`));
           const postData = querySnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
           }));
-
           setPosts(postData);
         } catch (error) {
           console.error("Error fetching posts: ", error);
@@ -53,6 +64,11 @@ const DisplayPosts = () => {
       if(count !== 1)
         setCount(1);
     }, [refreshPosts])
+
+    useEffect(() => {
+      if(count !== 1)
+        setCount(1);
+    }, [sortOption])
 
     useEffect(() => {
       loadPosts();
@@ -195,10 +211,6 @@ const DisplayPosts = () => {
         }
       }
 
-      const handleSort = () => {
-
-      }
-
     return(
         <div>
             {isLoading ? 
@@ -208,9 +220,9 @@ const DisplayPosts = () => {
                 ) : (
                 <div>
                     <div className="sort buttons">
-                      <button onClick={handleSort()}>Top</button>
-                      <button onClick={handleSort()}>New</button>
-                      <button onClick={handleSort()}>Old</button>
+                      <button onClick={() => setSortOption("top")}>Top</button>
+                      <button onClick={() => setSortOption("new")}>New</button>
+                      <button onClick={() => setSortOption("old")}>Old</button>
                     </div>
                     <ol className="post-list">
                     {posts.map((postItem) => (
