@@ -76,7 +76,6 @@ const DisplayPost = () => {
         }
       }
         
-  
       // On load control the number of times firebase is called by altering setCount.
       useEffect(() => {
         if(count !== 1)
@@ -89,11 +88,13 @@ const DisplayPost = () => {
       }, [refreshComments])
   
       useEffect(() => {
-        loadPost();
+        if(count !== 1)
+          loadPost();
       }, [count])
 
       useEffect(() => {
-        handleCommentData();
+        if(commentCount !== 1)
+          handleCommentData();
       }, [commentCount])
     
       const formatTime = ({ seconds }) => {
@@ -317,7 +318,7 @@ const DisplayPost = () => {
                 onClick={() => { handleDislike(id, post.likes);}}
                 >Dislike</button>
               </p>
-              {user && user.email === comment.owner ? 
+              {user && user.email === post.owner ? 
                   <div className="post edit-delete">
                     <button className={`editbutton ${user.email === post.owner ? "" : "disabled"}`}
                     onClick={() => {
@@ -339,7 +340,9 @@ const DisplayPost = () => {
                       value={comment}
                     ></textarea>
                     <button onClick={() => handleAddComment(page, id, comment)}>Add Comment</button>
-                    {commentData ? "" : <div onClick={handleCommentData}>Comments...</div>}
+                    {commentData ? "" : <div onClick={() => {
+                      setRefreshComments(!refreshComments);
+                    }}>Comments...</div>}
                     {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content">
                           <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>

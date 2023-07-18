@@ -207,7 +207,7 @@ const DisplayPosts = () => {
                 <p>Be the first to write a post...</p>
                 ) : (
                 <div>
-                    <div>
+                    <div className="sort buttons">
                       <button onClick={handleSort()}>Top</button>
                       <button onClick={handleSort()}>New</button>
                       <button onClick={handleSort()}>Old</button>
