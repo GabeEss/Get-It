@@ -19,6 +19,8 @@ const DisplayPost = () => {
     const [comment, setComment] = useState(""); // holds the string for the textarea input
     const [noClick, setNoClick] = useState(false); // When true, the disabled class is applied to like/dislike
     const [sortOption, setSortOption] = useState("new"); // Track sorting state
+    const [isLoading, setIsLoading] = useState(false); // Track loading state
+    const [activateComments, setActivate] = useState(false); // When the comments button is clicked, displays comments
     const { page, id } = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
     const {user} = useContext(UserContext); // if the user is logged in
@@ -32,6 +34,7 @@ const DisplayPost = () => {
 
       const loadPost = async () => {
         const fetchPost = async () => {
+          setIsLoading(true);
           try {
             const postRef = doc(db, `${page}Posts`, id);
             const docSnap = await getDoc(postRef);
@@ -48,6 +51,7 @@ const DisplayPost = () => {
         if(count === 1) {
           console.log("Firebase called.");
           await fetchPost();
+          setIsLoading(false);
           setCount(0);
         }
       }
@@ -57,8 +61,16 @@ const DisplayPost = () => {
           try {
             const postRef = doc(db, `${page}Posts`, id);
             const commentsCollectionRef = collection(postRef, "comments");
+            let querySnapshot;
+            if (sortOption === "new") {
+              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "desc")));
+            } else if (sortOption === "old") {
+              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "asc")));
+            } else {
+              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("likes", "desc")));
+            }
             // Retrieve comments for the post
-            const querySnapshot = await getDocs(commentsCollectionRef);
+            // const querySnapshot = await getDocs(commentsCollectionRef);
             // Add the comment id into the commentData state.
             const comments = querySnapshot.docs.map((doc) => 
             ({
@@ -76,6 +88,16 @@ const DisplayPost = () => {
           setCommentCount(0);
         }
       }
+
+      useEffect(() => {
+        if(commentCount !== 1)
+          setCommentCount(1);
+      }, [refreshComments])
+
+      useEffect(() => {
+        if(commentCount !== 1) 
+          setCommentCount(1);
+      }, [sortOption])
         
       // On load control the number of times firebase is called by altering setCount.
       useEffect(() => {
@@ -84,19 +106,13 @@ const DisplayPost = () => {
       }, []);
   
       useEffect(() => {
-        if(commentCount !== 1)
-          setCommentCount(1);
-      }, [refreshComments])
-  
-      useEffect(() => {
-        if(count !== 1)
-          loadPost();
+        loadPost();
       }, [count])
 
       useEffect(() => {
-        if(commentCount !== 1)
+        if(activateComments)
           handleCommentData();
-      }, [commentCount])
+      }, [commentCount, activateComments])
     
       const formatTime = ({ seconds }) => {
         if (typeof seconds !== "number" || isNaN(seconds)) {
@@ -298,10 +314,16 @@ const DisplayPost = () => {
           }
         }
       }
+
+      const handleCommentClick = () => {
+        setActivate(true);
+      }
     
       return (
         <div>
-          {post ? (
+          { isLoading ? 
+              <p>Loading...</p>
+          : post ? (
             <div className="post-item">
               <h3 className="post-title">{post.title}</h3>
               <p className="post post-owner">Original poster: {post.nickname}</p>
@@ -348,7 +370,7 @@ const DisplayPost = () => {
                       <button onClick={() => setSortOption("old")}>Old</button>
                     </div> :
                     <div onClick={() => {
-                        setRefreshComments(!refreshComments);
+                        handleCommentClick();
                       }}>Comments...
                     </div>}
                     {commentData ? commentData.map((comment, index) => (
@@ -393,7 +415,7 @@ const DisplayPost = () => {
                       <button onClick={() => setSortOption("old")}>Old</button>
                   </div> : 
                 <div onClick={() => {
-                      setRefreshComments(!refreshComments);
+                      handleCommentClick();
                     }}>Comments...
                   </div>}
                 {commentData ? commentData.map((comment, index) => (
@@ -419,11 +441,10 @@ const DisplayPost = () => {
               }
             </div>
           ) : (
-            <p>Loading post...</p>
+            <p>Something's gone wrong...</p>
           )}
         </div>
       );
-
 }
 
 export default DisplayPost;
