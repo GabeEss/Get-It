@@ -47,7 +47,7 @@ const HomeContent = () => {
             case "home":
                 return <CreatePost/>
             default:
-                return <HomeDB/>;
+                return <CreatePost/>;
         }
     };
 

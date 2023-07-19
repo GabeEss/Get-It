@@ -123,7 +123,7 @@ const DisplayPosts = () => {
         return formattedDate;
       };
    
-    const handleClick = (title, id, page) => {
+    const handleGoToPost = (title, id, page) => {
         navigate(`/${page}/${title}/${id}`);
         setSearchTerm("");
     }
@@ -253,7 +253,7 @@ const DisplayPosts = () => {
                     {posts.map((postItem) => (
                         <li className="post-item" key={postItem.id}>
                             <h3 className="post post-title"
-                            onClick={() => handleClick(postItem.title, postItem.id, postItem.page)}
+                            onClick={() => handleGoToPost(postItem.title, postItem.id, postItem.page)}
                             >{postItem.title}</h3>
                             <h5 className="post post-name">Original poster: {postItem.nickname}</h5>
                             <h5 className="post post-time">
