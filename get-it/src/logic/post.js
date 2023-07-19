@@ -5,6 +5,7 @@ import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, query, 
 async function createPost(owner, title, content, page, time, nickname) {
     const post = {
       title: title,
+      page: page,
       owner: owner,
       content: content,
       likes: 0,
@@ -143,23 +144,21 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-const fetchLimitedPostsFromPage = async (pageName, sortOption, limit) => {
+const fetchLimitedPostsFromPage = async (sortOption, currentPage) => {
   let querySnapshot;
-
   if (sortOption === "new") {
     querySnapshot = await getDocs(
-      query(collection(db, `${pageName}Posts`), orderBy("time", "desc").limit(limit))
+      query(collection(db, `${currentPage}Posts`), orderBy("time", "desc"))
     );
   } else if (sortOption === "old") {
     querySnapshot = await getDocs(
-      query(collection(db, `${pageName}Posts`), orderBy("time", "asc").limit(limit))
+      query(collection(db, `${currentPage}Posts`), orderBy("time", "asc"))
     );
   } else {
     querySnapshot = await getDocs(
-      query(collection(db, `${pageName}Posts`), orderBy("likes", "desc").limit(limit))
+      query(collection(db, `${currentPage}Posts`), orderBy("likes", "desc"))
     );
   }
-
   const postData = querySnapshot.docs.map((doc) => ({
     ...doc.data(),
     id: doc.id,

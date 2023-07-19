@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { useNavigate } from 'react-router-dom';
-import { updateLikes, deletePost, fetchPostsFromCurrentPage } from "../../../logic/post";
+import { updateLikes, deletePost, fetchPostsFromCurrentPage, fetchLimitedPostsFromPage } from "../../../logic/post";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
@@ -24,15 +24,36 @@ const DisplayPosts = () => {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          // Get the post data from firestore
-          const postData = await fetchPostsFromCurrentPage(sortOption, currentPage);
+          if(currentPage !== "home") {
+            // Get the post data from firestore
+            const postData = await fetchPostsFromCurrentPage(sortOption, currentPage);
+            // If search exists, filter the postData.
+            const filteredPosts = search ? postData.filter((post) =>
+              post.title.toLowerCase().includes(search.toLowerCase())
+            ) : postData;
+            setPosts(filteredPosts);
+          } else {
+            const limit = 2; // Limit number of displayed posts to two per page.
 
-          // If search exists, filter the postData.
-          const filteredPosts = search ? postData.filter((post) =>
-            post.title.toLowerCase().includes(search.toLowerCase())
-          ) : postData;
+            const page1 = "gaming";
+            const page2 = "business";
+            const page3 = "television";
 
-          setPosts(filteredPosts);
+            const page1Posts = await fetchLimitedPostsFromPage(sortOption, page1, limit);
+            const page2Posts = await fetchLimitedPostsFromPage(sortOption, page2, limit);
+            const page3Posts = await fetchLimitedPostsFromPage(sortOption, page3, limit);
+
+            const combinedPosts = [...page1Posts, ...page2Posts, ...page3Posts];
+
+            // If search exists, filter the combined posts.
+            const filteredPosts = search
+            ? combinedPosts.filter((post) =>
+                  post.title.toLowerCase().includes(search.toLowerCase())
+              )
+            : combinedPosts;
+
+            setPosts(filteredPosts);
+          }
         } catch (error) {
              console.error("Error fetching posts: ", error);
         } finally {
@@ -102,8 +123,8 @@ const DisplayPosts = () => {
         return formattedDate;
       };
    
-    const handleClick = (title, id) => {
-        navigate(`/${currentPage}/${title}/${id}`);
+    const handleClick = (title, id, page) => {
+        navigate(`/${page}/${title}/${id}`);
         setSearchTerm("");
     }
 
@@ -232,7 +253,7 @@ const DisplayPosts = () => {
                     {posts.map((postItem) => (
                         <li className="post-item" key={postItem.id}>
                             <h3 className="post post-title"
-                            onClick={() => handleClick(postItem.title, postItem.id)}
+                            onClick={() => handleClick(postItem.title, postItem.id, postItem.page)}
                             >{postItem.title}</h3>
                             <h5 className="post post-name">Original poster: {postItem.nickname}</h5>
                             <h5 className="post post-time">
