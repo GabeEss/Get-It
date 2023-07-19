@@ -6,7 +6,7 @@ import { RecentContext } from "../../contexts/RecentContext";
 const Sidebar = () => {
     const navigate = useNavigate();
     const {setSearchTerm} = useContext(SearchContext);
-    const {recent} = useContext(RecentContext);
+    const {prevPath} = useContext(RecentContext);
 
     const handleGaming = () => {
         setSearchTerm("");
@@ -28,14 +28,20 @@ const Sidebar = () => {
         navigate('/');
     }
 
-    const capitalizeFirstLetter = (str) => {
-        if(str !== "post")
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        return str;
-    };
-
     const handleRecentClick = () => {
+        navigate(`${prevPath}`);
+    }
 
+    const formatRecentDisplay = (path) => {
+        const segments = path.split('/');
+  
+        // Check if the path contains at least two segments
+        if (segments.length >= 3) {
+            // Returns everything except the postId at the end of the path and also replaces %20 with spaces
+            return segments[0] + '/' + segments[1] + '/' + segments[2].replace(/%20/g, ' ');
+        } else {
+            return path; // Return the path as it is if it contains fewer than three segments
+        }
     }
 
     return(
@@ -48,7 +54,7 @@ const Sidebar = () => {
             <div className="recent">
                 <h3 className="sidebar-header">Recent</h3>
                 <div className="sidebar-topic clickable" onClick={handleRecentClick}>
-                    {capitalizeFirstLetter(recent)}
+                    {formatRecentDisplay(prevPath)}
                 </div>
             </div>
             <div className="topics">

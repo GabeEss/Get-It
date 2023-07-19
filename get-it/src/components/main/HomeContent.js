@@ -21,8 +21,6 @@ const HomeContent = () => {
     const {edit} = useContext(EditContext); // if user clicked on the edit post or edit comment button
     const {editComment} = useContext(EditCommentContext);
     const {currentPage, setCurrentPage} = useContext(CurrentPageContext);
-    const {setRecent} = useContext(RecentContext);
-   
 
     // Sets the current page
     useEffect(() => {
@@ -33,8 +31,6 @@ const HomeContent = () => {
             }
             return "home";
             };
-            
-            setRecent(currentPage); // Save the last page
             const page = getCurrentPage();
             setCurrentPage(page);
       }, []);
@@ -55,10 +51,6 @@ const HomeContent = () => {
                 return <HomeDB/>;
         }
     };
-
-    const capitalizeFirstLetter = (str) => {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      };
 
     return(
         <div className="home-main">
