@@ -1,6 +1,6 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
 
 async function addComment(page, postId, content, time) {
 
@@ -154,4 +154,25 @@ const updateNumberOfLikes = async (commentRef, numLikes, plusMinus) => {
     });
   }
 
-export { addComment, updateCommentLikes, editCommentInFirestore, deleteComment };
+const fetchCommentsFromCurrentPage = async (page, id, sortOption) => {
+    const postRef = doc(db, `${page}Posts`, id);
+    const commentsCollectionRef = collection(postRef, "comments");
+    let querySnapshot;
+    if (sortOption === "new") {
+        querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "desc")));
+    } else if (sortOption === "old") {
+        querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "asc")));
+    } else {
+        querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("likes", "desc")));
+    }
+    // Add the comment id into the commentData state.
+    const comments = querySnapshot.docs.map((doc) => 
+    ({
+        ...doc.data(),
+        commentid: doc.id
+    }));
+
+    return comments;
+}
+
+export { addComment, updateCommentLikes, editCommentInFirestore, deleteComment, fetchCommentsFromCurrentPage };

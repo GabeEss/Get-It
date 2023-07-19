@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
-import { db } from "../../../firebase";
-import { collection, getDocs, query, orderBy} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import { updateLikes, deletePost } from "../../../logic/post";
+import { updateLikes, deletePost, fetchPostsFromCurrentPage } from "../../../logic/post";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
@@ -26,23 +24,8 @@ const DisplayPosts = () => {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          let querySnapshot;
-          
-          if(sortOption === "new") {
-            querySnapshot = await getDocs(
-              query(collection(db, `${currentPage}Posts`), orderBy("time", "desc")))
-          } else if(sortOption === "old") {
-            querySnapshot = await getDocs(
-              query(collection(db, `${currentPage}Posts`), orderBy("time", "asc")))
-          } else {
-            querySnapshot = await getDocs(
-              query(collection(db, `${currentPage}Posts`), orderBy("likes", "desc")))
-          }
-          
-          const postData = querySnapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-          }));
+          // Get the post data from firestore
+          const postData = await fetchPostsFromCurrentPage(sortOption, currentPage);
 
           // If search exists, filter the postData.
           const filteredPosts = search ? postData.filter((post) =>

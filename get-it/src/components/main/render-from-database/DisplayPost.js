@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { db } from "../../../firebase";
-import { doc, getDoc, getDocs, collection, serverTimestamp, query, orderBy } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp} from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
-import { updateLikes } from "../../../logic/post";
-import { addComment, updateCommentLikes, deleteComment } from "../../../logic/comment";
-import { deletePost } from "../../../logic/post";
+import { updateLikes, deletePost } from "../../../logic/post";
+import { addComment, updateCommentLikes, deleteComment, fetchCommentsFromCurrentPage } from "../../../logic/comment";
 import { UserContext } from "../../../contexts/UserContext";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { EditCommentContext } from "../../../contexts/EditCommentContext";
@@ -21,7 +20,7 @@ const DisplayPost = () => {
     const [sortOption, setSortOption] = useState("new"); // Track sorting state
     const [isLoading, setIsLoading] = useState(false); // Track loading state
     const [activateComments, setActivate] = useState(false); // When the comments button is clicked, displays comments
-    const { page, id } = useParams(); // get the page and post id from the url
+    const {page, id} = useParams(); // get the page and post id from the url
     const navigate = useNavigate();
     const {user} = useContext(UserContext); // if the user is logged in
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up on the post
@@ -59,24 +58,7 @@ const DisplayPost = () => {
       const handleCommentData = async () => {
         const fetchComments = async () => {
           try {
-            const postRef = doc(db, `${page}Posts`, id);
-            const commentsCollectionRef = collection(postRef, "comments");
-            let querySnapshot;
-            if (sortOption === "new") {
-              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "desc")));
-            } else if (sortOption === "old") {
-              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("time", "asc")));
-            } else {
-              querySnapshot = await getDocs(query(commentsCollectionRef, orderBy("likes", "desc")));
-            }
-            // Retrieve comments for the post
-            // const querySnapshot = await getDocs(commentsCollectionRef);
-            // Add the comment id into the commentData state.
-            const comments = querySnapshot.docs.map((doc) => 
-            ({
-              ...doc.data(),
-              commentid: doc.id
-            }));
+            const comments = await fetchCommentsFromCurrentPage(page, id, sortOption);
             setCommentData(comments);
           } catch (error) {
             console.error("Error fetching comments: ", error);

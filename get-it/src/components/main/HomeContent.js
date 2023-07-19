@@ -5,7 +5,6 @@ import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { EditCommentContext } from "../../contexts/EditCommentContext";
-import { RecentContext } from "../../contexts/RecentContext";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";

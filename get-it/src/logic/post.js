@@ -1,6 +1,6 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
     const post = {
@@ -143,4 +143,49 @@ const updateNumberOfLikes = async (postRef, numLikes, plusMinus) => {
   });
 }
 
-export { createPost, updateLikes, editPost, deletePost };
+const fetchLimitedPostsFromPage = async (pageName, sortOption, limit) => {
+  let querySnapshot;
+
+  if (sortOption === "new") {
+    querySnapshot = await getDocs(
+      query(collection(db, `${pageName}Posts`), orderBy("time", "desc").limit(limit))
+    );
+  } else if (sortOption === "old") {
+    querySnapshot = await getDocs(
+      query(collection(db, `${pageName}Posts`), orderBy("time", "asc").limit(limit))
+    );
+  } else {
+    querySnapshot = await getDocs(
+      query(collection(db, `${pageName}Posts`), orderBy("likes", "desc").limit(limit))
+    );
+  }
+
+  const postData = querySnapshot.docs.map((doc) => ({
+    ...doc.data(),
+    id: doc.id,
+  }));
+
+  return postData;
+};
+
+const fetchPostsFromCurrentPage = async (sortOption, currentPage) => {
+  let querySnapshot;
+  if(sortOption === "new") {
+    querySnapshot = await getDocs(
+      query(collection(db, `${currentPage}Posts`), orderBy("time", "desc")))
+  } else if(sortOption === "old") {
+    querySnapshot = await getDocs(
+      query(collection(db, `${currentPage}Posts`), orderBy("time", "asc")))
+  } else {
+    querySnapshot = await getDocs(
+      query(collection(db, `${currentPage}Posts`), orderBy("likes", "desc")))
+  }
+
+  const postData = querySnapshot.docs.map((doc) => ({
+    ...doc.data(),
+    id: doc.id,
+  }));
+  return postData;
+}
+
+export { createPost, updateLikes, editPost, deletePost, fetchLimitedPostsFromPage, fetchPostsFromCurrentPage };
