@@ -1,10 +1,12 @@
 import React, {useContext} from "react";
 import { useNavigate } from 'react-router-dom';
 import { SearchContext } from "../../contexts/SearchContext";
+import { RecentContext } from "../../contexts/RecentContext";
 
 const Sidebar = () => {
     const navigate = useNavigate();
     const {setSearchTerm} = useContext(SearchContext);
+    const {recent} = useContext(RecentContext);
 
     const handleGaming = () => {
         setSearchTerm("");
@@ -26,6 +28,16 @@ const Sidebar = () => {
         navigate('/');
     }
 
+    const capitalizeFirstLetter = (str) => {
+        if(str !== "post")
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        return str;
+    };
+
+    const handleRecentClick = () => {
+
+    }
+
     return(
         <div className="sidebar-container">
             <div className="feeds">
@@ -35,7 +47,9 @@ const Sidebar = () => {
             </div>
             <div className="recent">
                 <h3 className="sidebar-header">Recent</h3>
-                <div className="sidebar-topic clickable">Placeholder 1</div>
+                <div className="sidebar-topic clickable" onClick={handleRecentClick}>
+                    {capitalizeFirstLetter(recent)}
+                </div>
             </div>
             <div className="topics">
                 <h3 className="sidebar-header">Topics</h3>

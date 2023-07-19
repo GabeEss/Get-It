@@ -5,6 +5,7 @@ import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { EditCommentContext } from "../../contexts/EditCommentContext";
+import { RecentContext } from "../../contexts/RecentContext";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
@@ -19,7 +20,8 @@ const HomeContent = () => {
     const {reset} = useContext(ResetPasswordContext); // if user clicked reset password, show component
     const {edit} = useContext(EditContext); // if user clicked on the edit post or edit comment button
     const {editComment} = useContext(EditCommentContext);
-    const { currentPage, setCurrentPage } = useContext(CurrentPageContext);
+    const {currentPage, setCurrentPage} = useContext(CurrentPageContext);
+    const {setRecent} = useContext(RecentContext);
    
 
     // Sets the current page
@@ -31,7 +33,8 @@ const HomeContent = () => {
             }
             return "home";
             };
-        
+            
+            setRecent(currentPage); // Save the last page
             const page = getCurrentPage();
             setCurrentPage(page);
       }, []);
@@ -52,6 +55,10 @@ const HomeContent = () => {
                 return <HomeDB/>;
         }
     };
+
+    const capitalizeFirstLetter = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      };
 
     return(
         <div className="home-main">

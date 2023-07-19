@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react";
 import { db } from "../../../firebase";
-import { collection, getDocs, query, orderBy, where} from "firebase/firestore";
+import { collection, getDocs, query, orderBy} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost } from "../../../logic/post";
 import { EditContext } from "../../../contexts/EditPostContext";
