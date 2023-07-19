@@ -89,7 +89,8 @@ const CreatePost = () => {
 
     return(
         <div>
-            {isAuthenticated ? <button onClick={handleNewPostClick}>New Post</button> : null}
+            {isAuthenticated && currentPage !== "home" ? 
+                <button onClick={handleNewPostClick}>New Post</button> : null}
             {newPost ? newPostForm() : null}
             <DisplayPosts/>
         </div>

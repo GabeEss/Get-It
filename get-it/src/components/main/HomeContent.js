@@ -9,7 +9,6 @@ import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
 import { EditPost, EditComment } from "./EditPost";
-import HomeDB from "./render-from-database/HomeDB";
 import DisplayPost from "./render-from-database/DisplayPost";
 import CreatePost from "./CreatePost";
 

@@ -52,7 +52,16 @@ const DisplayPosts = () => {
               )
             : combinedPosts;
 
-            setPosts(filteredPosts);
+            let sortedPosts = [];
+
+            if (sortOption === "old") {
+              sortedPosts = filteredPosts.sort((a, b) => a.time - b.time);
+            } else if (sortOption === "new") {
+              sortedPosts = filteredPosts.sort((a, b) => b.time - a.time);
+            } else if (sortOption === "top") {
+              sortedPosts = filteredPosts.sort((a, b) => b.likes - a.likes);
+            }
+            setPosts(sortedPosts);
           }
         } catch (error) {
              console.error("Error fetching posts: ", error);

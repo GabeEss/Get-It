@@ -34,7 +34,9 @@ const Sidebar = () => {
 
     const formatRecentDisplay = (path) => {
         const segments = path.split('/');
-  
+        
+        if(path === "/") return "/home";
+
         // Check if the path contains at least two segments
         if (segments.length >= 3) {
             // Returns everything except the postId at the end of the path and also replaces %20 with spaces
@@ -49,7 +51,6 @@ const Sidebar = () => {
             <div className="feeds">
                 <h3 className="sidebar-header">Feeds</h3>
                 <div className="sidebar-topic clickable" onClick={handleHome}>Home</div>
-                <div className="sidebar-topic">Popular</div>
             </div>
             <div className="recent">
                 <h3 className="sidebar-header">Recent</h3>
