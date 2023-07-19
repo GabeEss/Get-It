@@ -1,15 +1,18 @@
-import React, {useContext} from "react";
+import React, {useState, useContext} from "react";
 import { SearchContext } from "../../contexts/SearchContext";
 
 const Searchbar = () => {
-    const {search, setSearchTerm} = useContext(SearchContext);
+    const [searchText, setText] = useState("");
+    const {setSearchTerm} = useContext(SearchContext);
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        setSearchTerm(searchText);
+        setText("");
     };
 
     const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+        setText(event.target.value);
     };
 
     return(
@@ -18,7 +21,7 @@ const Searchbar = () => {
                 <input
                     type="text"
                     placeholder="Search Get It..."
-                    value={search}
+                    value={searchText}
                     onChange={handleSearchChange}
                     onSubmit={handleFormSubmit}
                 />

@@ -1,12 +1,13 @@
 import React, {useState, useEffect, useContext} from "react";
 import { db } from "../../../firebase";
-import { collection, getDocs, query, orderBy} from "firebase/firestore";
+import { collection, getDocs, query, orderBy, where} from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { updateLikes, deletePost } from "../../../logic/post";
 import { EditContext } from "../../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
 import { UserContext } from "../../../contexts/UserContext";
+import { SearchContext } from "../../../contexts/SearchContext";
 
 const DisplayPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -19,12 +20,14 @@ const DisplayPosts = () => {
     const {setEdit} = useContext(EditContext); // Controls the edit form pop up
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
+    const {search, setSearchTerm} = useContext(SearchContext);
 
     const loadPosts = async () => {
       const fetchData = async () => {
         setIsLoading(true);
         try {
           let querySnapshot;
+          
           if(sortOption === "new") {
             querySnapshot = await getDocs(
               query(collection(db, `${currentPage}Posts`), orderBy("time", "desc")))
@@ -35,14 +38,22 @@ const DisplayPosts = () => {
             querySnapshot = await getDocs(
               query(collection(db, `${currentPage}Posts`), orderBy("likes", "desc")))
           }
-          // const querySnapshot = await getDocs(collection(db, `${currentPage}Posts`));
+          
           const postData = querySnapshot.docs.map((doc) => ({
             ...doc.data(),
             id: doc.id,
           }));
-          setPosts(postData);
+
+          // If search exists, filter the postData.
+          const filteredPosts = search ? postData.filter((post) =>
+            post.title.toLowerCase().includes(search.toLowerCase())
+          ) : postData;
+
+          setPosts(filteredPosts);
         } catch (error) {
-          console.error("Error fetching posts: ", error);
+             console.error("Error fetching posts: ", error);
+        } finally {
+          setIsLoading(false);
         }
       };
       
@@ -54,21 +65,30 @@ const DisplayPosts = () => {
       }
     }
 
-    // On load control the number of times firebase is called by altering setCount.
+    // On initial load, control the number of times firebase is called by altering setCount.
     useEffect(() => {
       if(count !== 1)
         setCount(1);
     }, []);
 
+    // Refreshes the posts when a post is edited, created, or deleted.
     useEffect(() => {
       if(count !== 1)
         setCount(1);
     }, [refreshPosts])
 
+    // Refreshes the posts when one of the sort buttons is clicked.
     useEffect(() => {
       if(count !== 1)
         setCount(1);
     }, [sortOption])
+
+    // Refreshes the posts when the search button is clicked.
+    useEffect(() => {
+      if (count !== 1) {
+        setCount(1);
+      }
+    }, [search]);
 
     useEffect(() => {
       loadPosts();
@@ -101,6 +121,7 @@ const DisplayPosts = () => {
    
     const handleClick = (title, id) => {
         navigate(`/${currentPage}/${title}/${id}`);
+        setSearchTerm("");
     }
 
     const handleLike = async (id, likesNum) => {
