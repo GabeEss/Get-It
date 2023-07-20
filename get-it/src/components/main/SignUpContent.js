@@ -1,10 +1,11 @@
 import React, {useState, useContext} from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, 
     signInWithPopup, fetchSignInMethodsForEmail,
-    signInWithEmailAndPassword, updateProfile, getAuth } from "firebase/auth";
+    signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import {auth, db, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
+import { searchUserByEmail } from "../../logic/user.js";
 
 // SIGN UP FORM
 
@@ -44,9 +45,20 @@ const SignUp = () => {
               if (signInMethods.length > 0) {
                 // User already has an account, log them in
                 signInWithEmailAndPassword(auth, username, password)
-                  .then((userCredential) => {
+                  .then(async (userCredential) => {
                     const user = userCredential.user;
-                    console.log("Sign-in successful:", user);
+                    if(await searchUserByEmail(username));
+                    else {
+                      const email = user.email;
+                      const displayName = nickname;
+                      console.log("Creating user document.");
+                      // Set display name.
+                      await updateProfile(auth.currentUser, { displayName });
+                      // Add user details to the users collection.
+                      const usersCollectionRef = collection(db, "users");
+                      await addDoc(usersCollectionRef, { email, displayName });
+                    }
+                    console.log("Sign-in successful.");
                     onClose();
                   })
                   .catch((error) => {
@@ -57,22 +69,24 @@ const SignUp = () => {
                 createUserWithEmailAndPassword(auth, username, password)
                   .then(async (userCredential) => {
                     const user = userCredential.user;
-                    const auth = getAuth();
-                    console.log("Sign-up successful:", user);
-                    const email = user.email;
-                    const displayName = nickname;
-                    // Set the display name for the user
-                    await updateProfile(auth.currentUser, { displayName });
-
-                    // Add user details to the users collection
-                    const usersCollectionRef = collection(db, "users");
-                    await addDoc(usersCollectionRef, { email, displayName });
-
+                    if(await searchUserByEmail(username));
+                    else {
+                      const email = user.email;
+                      const displayName = nickname;
+                      console.log("Creating user document.");
+                      // Set display name.
+                      await updateProfile(auth.currentUser, { displayName });
+                      // Add user details to the users collection.
+                      const usersCollectionRef = collection(db, "users");
+                      await addDoc(usersCollectionRef, { email, displayName });
+                    }
+                    console.log("Sign-up successful.");
                     onClose();
                   })
                   .catch((error) => {
                     console.error("Error signing up:", error);
                     setErrorMessage("Error signing up. Your password should have at least 6 characters and a number.");
+                    onClose();
                   });
               }
             })
@@ -141,11 +155,16 @@ const SignUpGoogle = ({ setSignUp }) => {
           // Check if sign in object has google credential
           if (credential) {
             // Extract email and display name from the Google user object
-            const { email, displayName } = result.user;
+            const { email } = result.user;
 
-            // Add user details to the users collection
-            const usersCollectionRef = collection(db, "users");
-            await addDoc(usersCollectionRef, { email, displayName });
+            if(await searchUserByEmail(email));
+            else {
+              const { email, displayName } = result.user;
+              console.log("Creating user document.");
+              // Add user details to the users collection
+              const usersCollectionRef = collection(db, "users");
+              await addDoc(usersCollectionRef, { email, displayName });
+            }
 
             console.log("Sign-up with Google successful.");
             setSignUp(false);    
