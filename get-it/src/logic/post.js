@@ -1,6 +1,7 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, getDocs,
+  getDoc, deleteDoc, query, orderBy, where, writeBatch } from "firebase/firestore";
 
 async function createPost(owner, title, content, page, time, nickname) {
     const post = {
@@ -187,4 +188,52 @@ const fetchPostsFromCurrentPage = async (sortOption, currentPage) => {
   return postData;
 }
 
-export { createPost, updateLikes, editPost, deletePost, fetchLimitedPostsFromPage, fetchPostsFromCurrentPage };
+const fetchUserPostsFromPage = async (page, email) => {
+
+  const postsQuerySnapshot = await getDocs(
+    query(collection(db, `${page}Posts`), where("owner", "==", email))
+  );
+
+  const postData = postsQuerySnapshot.docs.map((doc) => ({
+    ...doc.data(),
+    id: doc.id,
+  }));
+
+  return postData;
+}
+
+const deleteUserPostsFromPage = async (page, email) => {
+  try {
+    const postsQuerySnapshot = await getDocs(
+      query(collection(db, `${page}Posts`), where("owner", "==", email))
+    );
+
+    const batch = writeBatch(db);
+
+    postsQuerySnapshot.forEach((postDoc) => {
+      const postRef = doc(db, `${page}Posts`, postDoc.id);
+      batch.update(postRef, {
+        title: "[deleted]",
+        content: "[deleted]",
+        nickname: "[deleted]",
+        owner: "",
+      });
+    });
+
+    await batch.commit();
+
+  } catch (error) {
+    console.error("Error deleting post: ", error);
+  }
+}
+
+export { 
+  createPost,
+  updateLikes,
+  editPost,
+  deletePost,
+  fetchLimitedPostsFromPage,
+  fetchPostsFromCurrentPage,
+  fetchUserPostsFromPage,
+  deleteUserPostsFromPage
+};

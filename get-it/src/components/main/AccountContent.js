@@ -5,6 +5,7 @@ import { UserContext } from "../../contexts/UserContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
 import { onAuthStateChanged } from "firebase/auth";
+import { deleteUser } from "../../logic/user";
 
 const AccountContent = () => {
     const navigate = useNavigate();
@@ -41,8 +42,15 @@ const AccountContent = () => {
         setReset(true);
     }
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete your account? This will retroactively remove your name from all posts and comments."
+        )
 
+        if(confirmDelete) {
+            await deleteUser();
+            handleGoHome();
+        }
     }
 
     const handleLightDark = () => {

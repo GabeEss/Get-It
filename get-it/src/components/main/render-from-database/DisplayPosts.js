@@ -8,6 +8,7 @@ import { UserContext } from "../../../contexts/UserContext";
 import { SearchContext } from "../../../contexts/SearchContext";
 
 const DisplayPosts = () => {
+    const pageNames = ["gaming", "business", "television"]; // To go through all pages when on the home page
     const [posts, setPosts] = useState([]);
     const [count, setCount] = useState(0); // This state helps control the number of times firebase is called on load.
     const [noClick, setNoClick] = useState(false); // When true, disabled class is applied to like/dislike
@@ -35,15 +36,11 @@ const DisplayPosts = () => {
           } else {
             const limit = 2; // Limit number of displayed posts to two per page.
 
-            const page1 = "gaming";
-            const page2 = "business";
-            const page3 = "television";
-
-            const page1Posts = await fetchLimitedPostsFromPage(sortOption, page1, limit);
-            const page2Posts = await fetchLimitedPostsFromPage(sortOption, page2, limit);
-            const page3Posts = await fetchLimitedPostsFromPage(sortOption, page3, limit);
-
-            const combinedPosts = [...page1Posts, ...page2Posts, ...page3Posts];
+            let combinedPosts = [];
+            for (const pageName of pageNames) {
+              const pagePosts = await fetchLimitedPostsFromPage(sortOption, pageName, limit);
+              combinedPosts = [...combinedPosts, ...pagePosts];
+            }
 
             // If search exists, filter the combined posts.
             const filteredPosts = search

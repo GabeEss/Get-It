@@ -21,17 +21,20 @@ const EditDisplayName = () => {
 
     return(
         <div className="editdisplayname popup">
-            <h2>Edit Post</h2>
+            <h2>Edit Display Name</h2>
             <form onSubmit={handleEditDisplayName}>
                 <input
                 type="text"
                 value={name}
                 onChange={handleNameChange}
-                placeholder="Title..."
+                placeholder="Display name..."
                 maxLength={25}
                 required
                 className="login-field"
                 />
+                <p>
+                    Changing your display name will not change the name associated with previous posts.
+                </p>
                 <button type="submit" className="submit-button">Submit</button>
                 <button onClick={onClose}>Close</button>
             </form>

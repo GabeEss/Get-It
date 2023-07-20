@@ -1,6 +1,7 @@
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
-import { doc, collection, addDoc, updateDoc, getDocs, getDoc, deleteDoc, query, orderBy } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc,
+  getDocs, getDoc, deleteDoc, query, orderBy, writeBatch } from "firebase/firestore";
 
 async function addComment(page, postId, content, time) {
 
@@ -175,4 +176,49 @@ const fetchCommentsFromCurrentPage = async (page, id, sortOption) => {
     return comments;
 }
 
-export { addComment, updateCommentLikes, editCommentInFirestore, deleteComment, fetchCommentsFromCurrentPage };
+const deleteUserCommentsFromPage = async (page, email) => {
+  try {
+    // Query all posts on the page
+    const postsQuerySnapshot = await getDocs(collection(db, `${page}Posts`));
+
+    const batch = writeBatch(db);
+
+    // Loop through each post
+    for (const postDoc of postsQuerySnapshot.docs) {
+      const postId = postDoc.id;
+      const commentsCollectionRef = collection(db, `${page}Posts/${postId}/comments`);
+
+      // Get all comments for the current post
+      const commentsQuerySnapshot = await getDocs(commentsCollectionRef);
+
+      // Loop through each comment and update it in the batch
+      for (const commentDoc of commentsQuerySnapshot.docs) {
+        const commentId = commentDoc.id;
+        const commentData = commentDoc.data();
+        const commentRef = doc(commentsCollectionRef, commentId);
+
+        // If the user is the owner of the comment
+        if (commentData.owner === email) {
+          batch.update(commentRef, {
+            content: "[deleted]",
+            nickname: "[deleted]",
+            owner: ""
+          });
+        }
+      }
+    }
+    // Commit the batch operation to update all comments and posts
+    await batch.commit();
+  } catch (error) {
+    console.error("Error deleting comments: ", error);
+  }
+}
+
+export { 
+  addComment,
+  updateCommentLikes,
+  editCommentInFirestore,
+  deleteComment,
+  fetchCommentsFromCurrentPage,
+  deleteUserCommentsFromPage
+ };
