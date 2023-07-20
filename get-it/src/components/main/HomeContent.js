@@ -5,6 +5,7 @@ import { ResetPasswordContext } from "../../contexts/ResetPasswordContext";
 import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { EditCommentContext } from "../../contexts/EditCommentContext";
+import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
@@ -12,6 +13,7 @@ import { EditPost, EditComment } from "./EditPost";
 import DisplayPost from "./render-from-database/DisplayPost";
 import CreatePost from "./CreatePost";
 import AccountContent from "./AccountContent";
+import EditDisplayName from "./EditDisplayName";
 
 const HomeContent = () => {
     const {login} = useContext(LoginContext); // if user clicked login, show component
@@ -19,6 +21,7 @@ const HomeContent = () => {
     const {reset} = useContext(ResetPasswordContext); // if user clicked reset password, show component
     const {edit} = useContext(EditContext); // if user clicked on the edit post or edit comment button
     const {editComment} = useContext(EditCommentContext);
+    const {editDisplayName} = useContext(EditDisplayNameContext);
     const {currentPage, setCurrentPage} = useContext(CurrentPageContext);
 
     // Sets the current page
@@ -66,6 +69,8 @@ const HomeContent = () => {
                     <EditPost/> 
                 ) : editComment ? (
                     <EditComment/>
+                ) : editDisplayName ? (
+                    <EditDisplayName/>
                 ) : (<div className="hidden"></div>)}
             </div>
             <div className="content-container">

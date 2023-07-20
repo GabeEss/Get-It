@@ -1,5 +1,7 @@
 import React, { createContext, useState } from 'react';
 
+// The EditContext controls when the edit post form pops up.
+
 export const EditContext = createContext();
 
 export const EditProvider = ({ children }) => {

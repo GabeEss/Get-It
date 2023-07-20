@@ -17,39 +17,42 @@ import { RefreshCommentsProvider } from "./contexts/RefreshCommentsContext";
 import { EditProvider } from "./contexts/EditPostContext";
 import { EditCommentProvider } from "./contexts/EditCommentContext";
 import { RecentProvider } from "./contexts/RecentContext";
+import { EditDisplayNameProvider } from "./contexts/EditDisplayNameContext";
 
 function App() {
   return (
     <HashRouter>
       <UserProvider>
-        <CurrentPageProvider>
-          <RecentProvider>
-            <LoginProvider>
-              <SignUpProvider>
-                <ResetPasswordProvider>
-                  <RefreshPostsProvider>
-                    <RefreshCommentsProvider>
-                        <SearchProvider>
-                          <EditProvider>
-                            <EditCommentProvider>
-                              <Routes>
-                                <Route path="/" element={<Homepage />} />
-                                <Route path="/gaming" element={<Gamingpage />} />
-                                <Route path="/business" element={<Businesspage />} />
-                                <Route path="/television" element={<Televisionpage />} />
-                                <Route path=":page/:title/:id" element={<Postpage />} />
-                                <Route path="/account" element={<Accountpage />} />
-                              </Routes>
-                            </EditCommentProvider>
-                          </EditProvider>
-                        </SearchProvider>
-                      </RefreshCommentsProvider>
-                    </RefreshPostsProvider>
-                </ResetPasswordProvider>
-              </SignUpProvider>
-            </LoginProvider>
-          </RecentProvider>
-        </CurrentPageProvider>
+        <EditDisplayNameProvider>
+          <CurrentPageProvider>
+            <RecentProvider>
+              <LoginProvider>
+                <SignUpProvider>
+                  <ResetPasswordProvider>
+                    <RefreshPostsProvider>
+                      <RefreshCommentsProvider>
+                          <SearchProvider>
+                            <EditProvider>
+                              <EditCommentProvider>
+                                <Routes>
+                                  <Route path="/" element={<Homepage />} />
+                                  <Route path="/gaming" element={<Gamingpage />} />
+                                  <Route path="/business" element={<Businesspage />} />
+                                  <Route path="/television" element={<Televisionpage />} />
+                                  <Route path=":page/:title/:id" element={<Postpage />} />
+                                  <Route path="/account" element={<Accountpage />} />
+                                </Routes>
+                              </EditCommentProvider>
+                            </EditProvider>
+                          </SearchProvider>
+                        </RefreshCommentsProvider>
+                      </RefreshPostsProvider>
+                  </ResetPasswordProvider>
+                </SignUpProvider>
+              </LoginProvider>
+            </RecentProvider>
+          </CurrentPageProvider>
+        </EditDisplayNameProvider>
       </UserProvider>
     </HashRouter>
   );

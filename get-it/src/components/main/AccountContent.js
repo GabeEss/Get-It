@@ -2,11 +2,15 @@ import React, {useEffect, useContext} from "react";
 import { useNavigate } from 'react-router-dom';
 import { auth } from "../../firebase";
 import { UserContext } from "../../contexts/UserContext";
+import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
+import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
 import { onAuthStateChanged } from "firebase/auth";
 
 const AccountContent = () => {
     const navigate = useNavigate();
     const {user, setUser} = useContext(UserContext);
+    const {setReset} = useContext(ResetPasswordContext);
+    const {setDisplayName} = useContext(EditDisplayNameContext);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -30,7 +34,19 @@ const AccountContent = () => {
     }
 
     const handleEditDisplay = () => {
-        
+        setDisplayName(true);
+    }
+
+    const handleChangePassword = () => {
+        setReset(true);
+    }
+
+    const handleDelete = () => {
+
+    }
+
+    const handleLightDark = () => {
+
     }
 
     return(
@@ -47,10 +63,10 @@ const AccountContent = () => {
                     <div className="account-options">
                         <h2>Account Options</h2>
                         <div className="account-buttons">
-                            <button>Change to Light/Dark Mode UI</button>
+                            <button onClick={handleLightDark}>Change to Light/Dark Mode UI</button>
                             <button onClick={handleEditDisplay}>Edit Display Name</button>
-                            <button>Change Password</button>
-                            <button>Delete Account</button>
+                            <button onClick={handleChangePassword}>Change Password</button>
+                            <button onClick={handleDelete}>Delete Account</button>
                         </div>
                     </div>
                     <button onClick={handleGoHome}>Back to home...</button>

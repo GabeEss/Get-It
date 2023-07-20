@@ -9,8 +9,7 @@ export const RecentProvider = ({ children }) => {
     const location = useLocation();
 
     useEffect(() => {
-      
-      // Update the previous path when it differs from the current path.
+      // Update the previous path when the former current path differs from the new current path.
       if(currentPath !== location.pathname) setPrev(currentPath);
       
       // Update the current path whenever the location changes.

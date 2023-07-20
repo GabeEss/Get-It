@@ -33,9 +33,9 @@ const SignIn = () => {
             if(await searchUserByEmail(username));
             else {
               console.log("Creating user document.");
-              await updateProfile(auth.currentUser, { displayName });
               const email = username;
-              const displayName = username;
+              const displayName = username; // The username can be the displayName until the user changes it manually
+              await updateProfile(auth.currentUser, { displayName });
               // Add user details to the users collection
               const usersCollectionRef = collection(db, "users");
               await addDoc(usersCollectionRef, { email, displayName });

@@ -113,6 +113,7 @@ const SignUp = () => {
                 placeholder="Email"
                 required
                 className="login-field"
+                maxLength={25}
                 />
                 <input
                 type="password"
@@ -121,6 +122,7 @@ const SignUp = () => {
                 placeholder="Password"
                 required
                 className="login-field"
+                maxLength={25}
                 />
                 <input
                 type="password"
@@ -128,6 +130,7 @@ const SignUp = () => {
                 placeholder="Confirm Password"
                 required
                 className="login-field"
+                maxLength={25}
                 />
                 <input
                 type="text"
@@ -136,6 +139,7 @@ const SignUp = () => {
                 placeholder="Display Name"
                 required
                 className="login-field"
+                maxLength={25}
                 />
                 <button type="submit" className="submit-button">Submit</button>
                 <button onClick={onClose}>Close</button>

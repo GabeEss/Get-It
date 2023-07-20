@@ -21,16 +21,21 @@ const PasswordReset = () => {
     if (!querySnapshot.empty) {
     sendPasswordResetEmail(auth, email)
         .then(() => {
-            console.log("Password reset email sent.");
-            setErrorMessage("Password reset email sent.");
+            const successMessage = "Password reset email sent.";
+            console.log(successMessage);
+            window.alert(successMessage);
             setReset(false);
         })
         .catch((error) => {
+            const errorMessage = "Error sending password reset email.";
+            window.alert(errorMessage);
             console.error("Error sending password reset email:", error);
-            setErrorMessage("Error sending password reset email.");
+            setErrorMessage(errorMessage);
         });
     } else {
-        console.error("Invalid email address.");
+        const errorMessage = "Invalid email.";
+        console.error(errorMessage);
+        window.alert(errorMessage);
         setErrorMessage("Invalid email address.");
     }
 };

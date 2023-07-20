@@ -1,5 +1,7 @@
 import React, { createContext, useState } from 'react';
 
+// The EditCommentContext controls when the edit comment form pops up.
+
 export const EditCommentContext = createContext();
 
 export const EditCommentProvider = ({ children }) => {
