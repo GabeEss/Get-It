@@ -53,20 +53,25 @@ const changeUserDisplayName = async (displayName) => {
   }
 }
 
-const deleteUser = async () => {
+const deleteUserOperation = async () => {
   // Get a reference to the user
   const auth = getAuth();
   const email = auth.currentUser.email;
 
-  await deleteUserPosts(email);
-  console.log("Delete posts done.");
-  await deleteUserComments(email);
-  console.log("Delete comments done.");
-  await deleteUserLikes(email);
-  console.log("Delete like history done.");
-  await deleteUserDocument(email);
-  console.log("Delete user document done.");
-
+  try {
+    await deleteUserPosts(email);
+    console.log("Delete posts done.");
+    await deleteUserComments(email);
+    console.log("Delete comments done.");
+    await deleteUserLikes(email);
+    console.log("Delete like history done.");
+    await deleteUserDocument(email);
+    console.log("Delete user document done.");
+    await auth.currentUser.delete();
+    console.log("User authentication deleted.");
+  } catch (error) {
+    console.log("Failed to completely delete the user.", error);
+  }
 
 }
 
@@ -113,7 +118,7 @@ const deleteUserDocument = async (email) => {
     const querySnapshot = await getDocs(usersCollectionRef);
 
      if (!querySnapshot.empty) {
-      // Getthe document containing the user's display name and email
+      // Get the document and reference containing the user's display name and email
       const userDoc = querySnapshot.docs.find(doc => doc.data().owner === email);
       const userDocRef = doc(usersCollectionRef, userDoc.id);
 
@@ -127,4 +132,4 @@ const deleteUserDocument = async (email) => {
   }
 }
 
-export { searchUserByEmail, changeUserDisplayName, deleteUser }  
+export { searchUserByEmail, changeUserDisplayName, deleteUserOperation }  

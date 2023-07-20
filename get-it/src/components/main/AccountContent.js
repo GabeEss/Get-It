@@ -5,7 +5,7 @@ import { UserContext } from "../../contexts/UserContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
 import { onAuthStateChanged } from "firebase/auth";
-import { deleteUser } from "../../logic/user";
+import { deleteUserOperation } from "../../logic/user";
 
 const AccountContent = () => {
     const navigate = useNavigate();
@@ -48,7 +48,7 @@ const AccountContent = () => {
         )
 
         if(confirmDelete) {
-            await deleteUser();
+            await deleteUserOperation();
             handleGoHome();
         }
     }
