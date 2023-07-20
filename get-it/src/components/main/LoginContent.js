@@ -3,7 +3,8 @@ import { signInWithEmailAndPassword, signInWithPopup,
     GoogleAuthProvider } from "firebase/auth";
 import { LoginContext } from "../../contexts/LoginScreenContext.js";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
-import {auth, provider} from "../../firebase.js";
+import {auth, provider, db} from "../../firebase.js";
+import { collection, addDoc } from "firebase/firestore";
 
 // LOGIN FORM
 
@@ -87,6 +88,13 @@ const SignInGoogle = ({ setLogin }) => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           // Check if sign in object has google credential
           if (credential) {
+            // Extract email and display name from the Google user object
+            const { email, displayName } = result.user;
+
+            // Add user details to the users collection
+            const usersCollectionRef = collection(db, "users");
+            await addDoc(usersCollectionRef, { email, displayName });
+            
             console.log("Sign-in with Google successful.");
             setLogin(false);    
           } else {
@@ -100,7 +108,7 @@ const SignInGoogle = ({ setLogin }) => {
     };
   
     return (
-      <button className="google" onClick={handleSignInWithGoogle}>Sign up with Google</button>
+      <button className="google" onClick={handleSignInWithGoogle}>Sign in with Google</button>
     )
   }
 

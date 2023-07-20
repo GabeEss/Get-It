@@ -29,13 +29,19 @@ const Sidebar = () => {
     }
 
     const handleRecentClick = () => {
-        navigate(`${prevPath}`);
+        if(prevPath === "/account")
+            handleHome();
+        else {
+            setSearchTerm("");
+            navigate(`${prevPath}`);
+        }
     }
 
     const formatRecentDisplay = (path) => {
         const segments = path.split('/');
         
         if(path === "/") return "/home";
+        if(path === "/account") return "/home";
 
         // Check if the path contains at least two segments
         if (segments.length >= 3) {

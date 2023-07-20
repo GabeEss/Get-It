@@ -28,7 +28,7 @@ async function addComment(page, postId, content, time) {
       const commentsCollectionRef = collection(postRef, "comments");
       const newCommentRef = await addDoc(commentsCollectionRef, comment);
       const commentId = newCommentRef.id;
-    //   console.log('Comment added successfully with ID:', commentId);
+      // console.log('Comment added successfully with ID:', commentId);
     } catch (error) {
       console.error('Error adding comment: ', error);
     }

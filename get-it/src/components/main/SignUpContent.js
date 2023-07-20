@@ -1,8 +1,9 @@
 import React, {useState, useContext} from "react";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, 
     signInWithPopup, fetchSignInMethodsForEmail,
-    signInWithEmailAndPassword } from "firebase/auth";
-import {auth, provider} from "../../firebase.js";
+    signInWithEmailAndPassword, updateProfile, getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import {auth, db, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
 
 // SIGN UP FORM
@@ -56,7 +57,17 @@ const SignUp = () => {
                 createUserWithEmailAndPassword(auth, username, password)
                   .then(async (userCredential) => {
                     const user = userCredential.user;
+                    const auth = getAuth();
                     console.log("Sign-up successful:", user);
+                    const email = user.email;
+                    const displayName = nickname;
+                    // Set the display name for the user
+                    await updateProfile(auth.currentUser, { displayName });
+
+                    // Add user details to the users collection
+                    const usersCollectionRef = collection(db, "users");
+                    await addDoc(usersCollectionRef, { email, displayName });
+
                     onClose();
                   })
                   .catch((error) => {
@@ -129,6 +140,13 @@ const SignUpGoogle = ({ setSignUp }) => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           // Check if sign in object has google credential
           if (credential) {
+            // Extract email and display name from the Google user object
+            const { email, displayName } = result.user;
+
+            // Add user details to the users collection
+            const usersCollectionRef = collection(db, "users");
+            await addDoc(usersCollectionRef, { email, displayName });
+
             console.log("Sign-up with Google successful.");
             setSignUp(false);    
           } else {

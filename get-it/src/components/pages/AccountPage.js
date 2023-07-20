@@ -1,18 +1,11 @@
 import React from "react";
 import "../../css/HomePage.css";
-import { useNavigate } from 'react-router-dom';
+import HomeContent from "../main/HomeContent";
 
 const Accountpage = () => {
-    const navigate = useNavigate();
-
-    const handleGoHome = () => {
-        navigate("/");
-    }
-
     return(
         <div className="homepage light-mode" data-page="account">
-            This is the account page.
-            <button onClick={handleGoHome}>Back to home...</button>
+            <HomeContent/>
         </div>
     )
 }

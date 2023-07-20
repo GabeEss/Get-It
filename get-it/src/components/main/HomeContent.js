@@ -11,6 +11,7 @@ import PasswordReset from "./PasswordResetContent";
 import { EditPost, EditComment } from "./EditPost";
 import DisplayPost from "./render-from-database/DisplayPost";
 import CreatePost from "./CreatePost";
+import AccountContent from "./AccountContent";
 
 const HomeContent = () => {
     const {login} = useContext(LoginContext); // if user clicked login, show component
@@ -41,10 +42,12 @@ const HomeContent = () => {
                 return <CreatePost/>
             case "television":
                 return <CreatePost/>
-            case "post":
-                return <DisplayPost/>
             case "home":
                 return <CreatePost/>
+            case "post":
+                return <DisplayPost/>
+            case "account":
+                return <AccountContent/>
             default:
                 return <CreatePost/>;
         }
