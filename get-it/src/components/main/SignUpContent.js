@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider,
 import { collection, addDoc } from "firebase/firestore";
 import {auth, db, provider} from "../../firebase.js";
 import { SignUpContext } from "../../contexts/SignUpScreenContext.js";
+import { LightDarkContext } from "../../contexts/LightDarkContext.js";
 import { searchUserByEmail } from "../../logic/user.js";
 
 // SIGN UP FORM
@@ -102,7 +103,7 @@ const SignUp = () => {
     }
 
     return(
-        <div className="signupcontent popup">
+        <div className="popup-container">
             <h2>Sign Up</h2>
             <SignUpGoogle setSignUp={setSignUp}/>
             <form onSubmit={handleSubmitCreate}>

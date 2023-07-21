@@ -60,32 +60,32 @@ const SignIn = () => {
     }
 
     return(
-        <div className="signincontent popup">
-            <h2>Sign In</h2>
-            <SignInGoogle setLogin={setLogin}/>
-            <form onSubmit={handleSubmitLogin}>
-                <input
-                type="email"
-                value={username}
-                onChange={handleChange}
-                placeholder="Email"
-                required
-                className="login-field"
-                />
-                <input
-                type="password"
-                value={password}
-                onChange={handleChangePassword}
-                placeholder="Password"
-                required
-                className="login-field"
-                />
-                <button type="submit" className="submit-button">Submit</button>
-                <button onClick={handlePasswordReset}>Reset Password</button>
-                <button onClick={onClose}>Close</button>
-            </form>
-            {errorMessage && <p className="error-message">{errorMessage}</p>}
-        </div>
+      <div className="popup-container">
+        <h2>Sign In</h2>
+        <SignInGoogle setLogin={setLogin}/>
+        <form onSubmit={handleSubmitLogin}>
+            <input
+            type="email"
+            value={username}
+            onChange={handleChange}
+            placeholder="Email"
+            required
+            className="login-field"
+            />
+            <input
+            type="password"
+            value={password}
+            onChange={handleChangePassword}
+            placeholder="Password"
+            required
+            className="login-field"
+            />
+            <button type="submit" className="submit-button">Submit</button>
+            <button onClick={handlePasswordReset}>Reset Password</button>
+            <button onClick={onClose}>Close</button>
+        </form>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </div>
     )
 }
 

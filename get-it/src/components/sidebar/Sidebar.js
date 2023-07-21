@@ -1,12 +1,15 @@
+import "../../css/Sidebar.css";
 import React, {useContext} from "react";
 import { useNavigate } from 'react-router-dom';
 import { SearchContext } from "../../contexts/SearchContext";
 import { RecentContext } from "../../contexts/RecentContext";
+import { LightDarkContext } from "../../contexts/LightDarkContext";
 
 const Sidebar = () => {
     const navigate = useNavigate();
     const {setSearchTerm} = useContext(SearchContext);
     const {prevPath} = useContext(RecentContext);
+    const {lightDark} = useContext(LightDarkContext);
 
     const handleGaming = () => {
         setSearchTerm("");

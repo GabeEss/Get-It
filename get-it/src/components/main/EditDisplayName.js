@@ -20,7 +20,7 @@ const EditDisplayName = () => {
     }
 
     return(
-        <div className="editdisplayname popup">
+        <div className="popup-container">
             <h2>Edit Display Name</h2>
             <form onSubmit={handleEditDisplayName}>
                 <input

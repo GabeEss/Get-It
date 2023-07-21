@@ -59,7 +59,7 @@ const CreatePost = () => {
 
     const newPostForm = () => {
         return(
-            <div className="newpost popup">
+            <div className="popup-container">
                 <h2>New Post</h2>
                 <form onSubmit={handleCreatePost}>
                     <input

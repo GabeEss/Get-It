@@ -6,6 +6,7 @@ import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { EditCommentContext } from "../../contexts/EditCommentContext";
 import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
+import { LightDarkContext } from "../../contexts/LightDarkContext.js";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
 import PasswordReset from "./PasswordResetContent";
@@ -23,6 +24,7 @@ const HomeContent = () => {
     const {editComment} = useContext(EditCommentContext);
     const {editDisplayName} = useContext(EditDisplayNameContext);
     const {currentPage, setCurrentPage} = useContext(CurrentPageContext);
+    const {lightDark} = useContext(LightDarkContext);
 
     // Sets the current page
     useEffect(() => {
@@ -37,6 +39,7 @@ const HomeContent = () => {
             setCurrentPage(page);
       }, []);
 
+    // Render the posts from the different pages.
     const renderContent = () => {
         switch (currentPage) {
             case "business":
@@ -56,21 +59,76 @@ const HomeContent = () => {
         }
     };
 
+    // Conditionally render the popup forms in light or dark mode.
     return(
         <div className="home-main">
             <div className="user-entry-container">
                 {login ? (
-                    <SignIn />
+                     <>
+                     {!lightDark ? 
+                         <div className="popup light-mode">
+                             <SignIn />
+                         </div> :
+                         <div className="popup dark-mode">
+                             <SignIn />
+                         </div>
+                     }
+                     </>
                 ) : signup ? (
-                    <SignUp />
+                    <>
+                    {!lightDark ? 
+                        <div className="popup light-mode">
+                            <SignUp />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <SignUp />
+                        </div>
+                    }
+                    </>
                 ) : reset ? (
-                    <PasswordReset/>
+                    <>
+                    {lightDark ? 
+                        <div className="popup light-mode">
+                            <PasswordReset />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <PasswordReset />
+                        </div>
+                    }
+                    </>
                 ) : edit ? ( 
-                    <EditPost/> 
+                    <>
+                    {lightDark ? 
+                        <div className="popup light-mode">
+                            <EditPost />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <EditPost />
+                        </div>
+                    }
+                    </>
                 ) : editComment ? (
-                    <EditComment/>
+                    <>
+                    {lightDark ? 
+                        <div className="popup light-mode">
+                            <EditComment />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <EditComment />
+                        </div>
+                    }
+                    </>
                 ) : editDisplayName ? (
-                    <EditDisplayName/>
+                    <>
+                    {lightDark ? 
+                        <div className="popup light-mode">
+                            <EditDisplayName />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <EditDisplayName />
+                        </div>
+                    }
+                    </>
                 ) : (<div className="hidden"></div>)}
             </div>
             <div className="content-container">

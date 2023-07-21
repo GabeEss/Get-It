@@ -4,6 +4,7 @@ import { auth } from "../../firebase";
 import { UserContext } from "../../contexts/UserContext";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
 import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
+import { LightDarkContext } from "../../contexts/LightDarkContext";
 import { onAuthStateChanged } from "firebase/auth";
 import { deleteUserOperation } from "../../logic/user";
 
@@ -12,6 +13,7 @@ const AccountContent = () => {
     const {user, setUser} = useContext(UserContext);
     const {setReset} = useContext(ResetPasswordContext);
     const {setDisplayName} = useContext(EditDisplayNameContext);
+    const {lightDark, setLightDark} = useContext(LightDarkContext);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -54,7 +56,7 @@ const AccountContent = () => {
     }
 
     const handleLightDark = () => {
-
+        setLightDark(!lightDark);
     }
 
     return(

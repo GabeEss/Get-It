@@ -1,12 +1,20 @@
-import React from "react";
-import "../../css/HomePage.css";
+import React, {useContext} from "react";
 import HomeContent from "../main/HomeContent";
+import { LightDarkContext } from "../../contexts/LightDarkContext";
 
 const Accountpage = () => {
+    const {lightDark} = useContext(LightDarkContext);
     return(
-        <div className="homepage light-mode" data-page="account">
-            <HomeContent/>
-        </div>
+        <>
+            {!lightDark ?
+                <div className="homepage light-mode" data-page="account">
+                    <HomeContent/>
+                </div> :
+                <div className="homepage dark-mode" data-page="account">
+                    <HomeContent/>
+                </div>
+            }
+        </>
     )
 }
 

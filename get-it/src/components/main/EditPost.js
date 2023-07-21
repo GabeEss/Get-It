@@ -39,7 +39,7 @@ const EditPost = () => {
     }
 
     return (
-        <div className="editpost popup">
+        <div className="popup-container">
             <h2>Edit Post</h2>
             <form onSubmit={handleEditPost}>
                 <input
@@ -92,7 +92,7 @@ const EditComment = () => {
     }
 
     return (
-        <div className="editpost popup">
+        <div className="popup-container">
             <h2>Edit Comment</h2>
             <form onSubmit={handleEditComment}>
                 <input
