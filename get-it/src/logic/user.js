@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { collection, doc, addDoc, getDocs, updateDoc, deleteDoc, query, where } from "firebase/firestore";
 import { deleteUserPostsFromPage } from "./post";
 import { deleteUserCommentsFromPage } from "./comment";
@@ -56,9 +56,16 @@ const changeUserDisplayName = async (displayName) => {
 const deleteUserOperation = async () => {
   // Get a reference to the user
   const auth = getAuth();
+  const user = auth.currentUser;
   const email = auth.currentUser.email;
 
   try {
+    // Reauthenticate the user by prompting for their password
+    const password = prompt("Please enter your password to confirm account deletion:");
+    const credentials = EmailAuthProvider.credential(email, password);
+    await reauthenticateWithCredential(user, credentials);
+
+
     await deleteUserPosts(email);
     console.log("Delete posts done.");
     await deleteUserComments(email);
@@ -72,7 +79,6 @@ const deleteUserOperation = async () => {
   } catch (error) {
     console.log("Failed to completely delete the user.", error);
   }
-
 }
 
 // Delete the user's posts on each page
@@ -106,9 +112,9 @@ const deleteUserLikes = async (email) => {
     const owner = user.email;
     const userRef = doc(db, "users", owner);
 
-      // Get user likes subcollection
-      const likesCollectionRef = collection(userRef, "likes");
-      const querySnapshot = await getDocs(likesCollectionRef);
+    // Get user likes subcollection
+    const likesCollectionRef = collection(userRef, "likes");
+    const querySnapshot = await getDocs(likesCollectionRef);
     
     if (querySnapshot) {
       // Delete each document in the likes collection
@@ -120,7 +126,7 @@ const deleteUserLikes = async (email) => {
       // Wait for all the delete operations to complete
       await Promise.all(deletePromises)
     } else {
-      console.log("No document found with the given email.");
+      console.log("The likes document was not found with the given email.");
     }
   } catch (error) {
     console.error("Error deleting user's like history: ", error);
@@ -142,7 +148,7 @@ const deleteUserDocument = async (email) => {
       // Delete the document
       await deleteDoc(userDocRef);
     } else {
-      console.log("No document found with the given email.");
+      console.log("The user document was not found with the given email.");
     }
   } catch(error) {
     console.error("Error deleting user document: ", error);
