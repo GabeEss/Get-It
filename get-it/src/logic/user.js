@@ -100,11 +100,28 @@ const deleteUserComments = async (email) => {
 // Delete the user's like history. Can't remove the likes the posts though.
 const deleteUserLikes = async (email) => {
   try {
-    // Get a reference to the user document in the 'users' collection using the email
-    const userRef = doc(collection(db, "users"), email);
+    // Get a reference to the user
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const owner = user.email;
+    const userRef = doc(db, "users", owner);
 
-    // Delete the user document
-    await deleteDoc(userRef);
+      // Get user likes subcollection
+      const likesCollectionRef = collection(userRef, "likes");
+      const querySnapshot = await getDocs(likesCollectionRef);
+    
+    if (querySnapshot) {
+      // Delete each document in the likes collection
+      const deletePromises = querySnapshot.docs.map((docSnapshot) => {
+        const docRef = doc(likesCollectionRef, docSnapshot.id);
+        return deleteDoc(docRef);
+      });
+
+      // Wait for all the delete operations to complete
+      await Promise.all(deletePromises)
+    } else {
+      console.log("No document found with the given email.");
+    }
   } catch (error) {
     console.error("Error deleting user's like history: ", error);
   }
@@ -119,7 +136,7 @@ const deleteUserDocument = async (email) => {
 
      if (!querySnapshot.empty) {
       // Get the document and reference containing the user's display name and email
-      const userDoc = querySnapshot.docs.find(doc => doc.data().owner === email);
+      const userDoc = querySnapshot.docs.find(doc => doc.data().email === email);
       const userDocRef = doc(usersCollectionRef, userDoc.id);
 
       // Delete the document
