@@ -59,7 +59,7 @@ const HomeContent = () => {
             case "account":
                 return <AccountContent/>
             default:
-                return <CreatePost/>;
+                return <DisplayPosts/>;
         }
     };
 

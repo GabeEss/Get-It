@@ -3,7 +3,6 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth, db } from "../../firebase.js";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { ResetPasswordContext } from "../../contexts/ResetPasswordContext.js";
-import { LightDarkContext } from "../../contexts/LightDarkContext.js";
 
 const PasswordReset = () => {
   const [email, setEmail] = useState("");

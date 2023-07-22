@@ -6,7 +6,8 @@ const EditDisplayName = () => {
     const [name, setName] = useState("");
     const {setDisplayName} = useContext(EditDisplayNameContext);
 
-    const handleEditDisplayName = async () => {
+    const handleEditDisplayName = async (event) => {
+        event.preventDefault();
         await changeUserDisplayName(name);
         onClose();
     }

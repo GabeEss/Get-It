@@ -28,19 +28,22 @@ const CreatePost = () => {
         setContent(event.target.value);
     };
 
-    const handleCreatePost = async () => {
+    const handleCreatePost = async (event) => {
+        event.preventDefault();
         const auth = getAuth();
         const user = auth.currentUser;
         const owner = user.email;
         const nickname = user.displayName;
         const time = serverTimestamp();
-        
         if(user) {
             // This will add the post to a collection of all posts related to this page.
-            await createPost(owner, title, content, currentPage, time, nickname);
-            setRefresh(!refreshPosts);
+            const id = await createPost(owner, title, content, currentPage, time, nickname);
+            if(id) {
+                await setRefresh(!refreshPosts);
+                onClose(); 
+            }
         }
-        onClose();
+        
     }
 
     const newPostForm = () => {

@@ -30,7 +30,8 @@ const EditPost = () => {
         setContent(event.target.value);
     };
 
-    async function handleEditPost() {
+    async function handleEditPost(event) {
+        event.preventDefault();
         if(edit) { 
             await editPost(currentPage, edit, title, content);
             setRefresh(!refreshPosts);
@@ -83,7 +84,8 @@ const EditComment = () => {
         setContent(event.target.value);
     };
 
-    async function handleEditComment() {
+    async function handleEditComment(event) {
+        event.preventDefault();
         if(editComment) { 
             await editCommentInFirestore(page, id, editComment, content);
             setRefreshComments(!refreshComments);
