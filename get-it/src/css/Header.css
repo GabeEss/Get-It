@@ -30,8 +30,20 @@
     border: none;
 }
 
+#app-name {
+    border-radius: 5px;
+}
+
 .dark-mode .usericon:hover {
     box-shadow: 1px 3px 3px rgba(255, 255, 255, 0.878);
+}
+
+.light-mode #app-name:hover{
+    box-shadow: 1px 1px 1px rgba(157, 157, 157, 0.878);
+}
+
+.dark-mode #app-name:hover{
+    box-shadow: 1px 1px 1px rgba(255, 255, 255, 0.878);
 }
 
 .searchbar-container form {
@@ -81,5 +93,6 @@
 
 .dark-mode .login-container button:hover {
     background-color: rgb(255, 81, 0);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 1px rgba(255, 255, 255, 0.878);
+    
 }
