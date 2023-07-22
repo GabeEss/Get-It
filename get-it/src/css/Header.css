@@ -30,6 +30,10 @@
     border: none;
 }
 
+.dark-mode .usericon:hover {
+    box-shadow: 1px 3px 3px rgba(255, 255, 255, 0.878);
+}
+
 .searchbar-container form {
     display: flex;
     align-items: center;

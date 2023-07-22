@@ -1,3 +1,4 @@
+import "../../css/AccountContent.css";
 import React, {useEffect, useContext} from "react";
 import { useNavigate } from 'react-router-dom';
 import { auth } from "../../firebase";
@@ -63,14 +64,14 @@ const AccountContent = () => {
         <div>
             {user ? 
                 <div className="account-container">
-                    <div className="user-info">
+                    <div className="user-info container">
                         <h2>Account Information</h2>
                         <div className="account-info">
                             <div>Display Name: {`${user.displayName}`}</div>
                             <div>Email: {`${user.email}`}</div>
                         </div>
                     </div>
-                    <div className="account-options">
+                    <div className="account-options container">
                         <h2>Account Options</h2>
                         <div className="account-buttons">
                             <button onClick={handleLightDark}>Change to Light/Dark Mode UI</button>
@@ -79,7 +80,7 @@ const AccountContent = () => {
                             <button onClick={handleDelete}>Delete Account</button>
                         </div>
                     </div>
-                    <button onClick={handleGoHome}>Back to home...</button>
+                    <div className="backtohome container"><button onClick={handleGoHome}>Back to home...</button></div>
                 </div>
             : <button onClick={handleGoHome}>Back to home...</button>}
         </div>

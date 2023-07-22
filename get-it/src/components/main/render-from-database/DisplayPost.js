@@ -411,33 +411,47 @@ const DisplayPost = () => {
                 </div>
               : 
               <div className="post non-user">
-                {commentData ? 
-                <div className="sort buttons">
-                      <button onClick={() => setSortOption("top")}>Top</button>
-                      <button onClick={() => setSortOption("new")}>New</button>
-                      <button onClick={() => setSortOption("old")}>Old</button>
-                  </div> : 
-                <div onClick={() => {
-                      handleCommentClick();
-                    }}>Comments...
-                  </div>}
+                {commentData ?
+                    <div className="goback-comments">
+                      <div className="sort-buttons">
+                        <button onClick={() => setSortOption("top")}>Top</button>
+                        <button onClick={() => setSortOption("new")}>New</button>
+                        <button onClick={() => setSortOption("old")}>Old</button>
+                      </div>
+                      <div className="goback-container">
+                          <button onClick={handleGoBack}>Go Back</button>
+                      </div>
+                  </div> :     
+                  <div className="goback-comments">
+                      <div className="clickable" onClick={() => {
+                        handleCommentClick();
+                      }}>Comments...
+                      </div>
+                      <div className="goback-container">
+                          <button onClick={handleGoBack}>Go Back</button>
+                      </div>
+                  </div> }
                 {commentData ? commentData.map((comment, index) => (
                         <div key={index} className="post comment-content container">
-                          <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
-                          {comment.content}
-                          <button
-                            className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                            onClick={() => {
-                                handleLike(id, comment.likes, comment.commentid);
-                            }}>Like
-                          </button>
-                            {comment.likes}
-                          <button
-                            className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                            onClick={() => {
-                                handleDislike(id, comment.likes, comment.commentid);
-                            }}>Dislike
-                          </button>
+                          <div className="time-likes">
+                            <h6>Posted by: {comment.nickname} at {formatTime(comment.time)}</h6>
+                            <div className="comment-likes-container">
+                              <button
+                                className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                                onClick={() => {
+                                    handleLike(id, comment.likes, comment.commentid);
+                                }}>▲
+                              </button>
+                                {comment.likes}
+                              <button
+                                className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                                onClick={() => {
+                                    handleDislike(id, comment.likes, comment.commentid);
+                                }}>▼
+                              </button>
+                            </div>
+                          </div>
+                          <div className="content">{comment.content}</div>
                         </div>
                     )) : ""}
               </div>            

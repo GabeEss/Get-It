@@ -39,7 +39,9 @@
 .sort-buttons button{
     border-style: none;
     outline-style: none;
-    padding: 10px;
+    padding: 5px;
+    width: 50px;
+    border-radius: 5px;
 }
 
 .post-list {
@@ -52,11 +54,19 @@
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+.dark-mode .post-title:hover {
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.878);
+}
+
 .post-item {
     max-width: 700px; /* Default max-width for the post-item */
     width: 100%; /* Ensure the item takes the full available width initially */
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease-in-out;
+}
+
+.dark-mode .post-item:hover{
+    box-shadow: 1px 1px 1px rgba(255, 255, 255, 0.878);
 }
 
 .post-item:hover {
@@ -104,7 +114,9 @@
 .post-owner button {
     border-style: none;
     outline-style: none;
-    padding: 10px;
+    padding: 5px;
+    width: 50px;
+    border-radius: 5px;
 }
 
 /* Add a media query for smaller screens */
@@ -122,4 +134,9 @@
 .light-mode .main-content button:hover {
     background-color: rgba(51, 51, 51, 0.2);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .main-content button:hover {
+    background-color: rgb(255, 115, 0);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.6);
 }
