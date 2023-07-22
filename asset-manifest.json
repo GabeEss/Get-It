@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/Get-It/static/css/main.654a9e56.css",
-    "main.js": "/Get-It/static/js/main.ab5a7f5b.js",
+    "main.js": "/Get-It/static/js/main.1c1e8f56.js",
     "static/media/orange-circle.png": "/Get-It/static/media/orange-circle.17ba7658954c38697c7e.png",
     "index.html": "/Get-It/index.html",
     "main.654a9e56.css.map": "/Get-It/static/css/main.654a9e56.css.map",
-    "main.ab5a7f5b.js.map": "/Get-It/static/js/main.ab5a7f5b.js.map"
+    "main.1c1e8f56.js.map": "/Get-It/static/js/main.1c1e8f56.js.map"
   },
   "entrypoints": [
     "static/css/main.654a9e56.css",
-    "static/js/main.ab5a7f5b.js"
+    "static/js/main.1c1e8f56.js"
   ]
 }
