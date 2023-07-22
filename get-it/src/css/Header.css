@@ -24,6 +24,12 @@
     border: none;
 }
 
+.usericon {
+    width: 26px;
+    height: 26px;
+    border: none;
+}
+
 .searchbar-container form {
     display: flex;
     align-items: center;
@@ -44,6 +50,7 @@
 .login-container {
     display: flex;
     gap: 5px;
+    align-items: center;
 }
 
 .login-container button {
@@ -51,4 +58,24 @@
     border-radius: 10px;
     height: 30px;
     width: 80px;
+}
+
+.light-mode .login-container button {
+    background-color: rgb(0, 98, 255);
+    color: white;
+}
+
+.light-mode .login-container button:hover {
+    background-color: rgba(0, 98, 255, 0.8);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .login-container button {
+    background-color: rgb(255, 81, 0);
+    color: black;
+}
+
+.dark-mode .login-container button:hover {
+    background-color: rgb(255, 81, 0);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }

@@ -19,6 +19,7 @@ import { EditCommentProvider } from "./contexts/EditCommentContext";
 import { RecentProvider } from "./contexts/RecentContext";
 import { EditDisplayNameProvider } from "./contexts/EditDisplayNameContext";
 import { LightDarkProvider } from "./contexts/LightDarkContext";
+import { CreatePostProvider } from "./contexts/CreatePostContext";
 
 function App() {
   return (
@@ -31,24 +32,26 @@ function App() {
                 <LoginProvider>
                   <SignUpProvider>
                     <ResetPasswordProvider>
-                      <RefreshPostsProvider>
-                        <RefreshCommentsProvider>
-                            <SearchProvider>
-                              <EditProvider>
-                                <EditCommentProvider>
-                                  <Routes>
-                                    <Route path="/" element={<Homepage />} />
-                                    <Route path="/gaming" element={<Gamingpage />} />
-                                    <Route path="/business" element={<Businesspage />} />
-                                    <Route path="/television" element={<Televisionpage />} />
-                                    <Route path=":page/:title/:id" element={<Postpage />} />
-                                    <Route path="/account" element={<Accountpage />} />
-                                  </Routes>
-                                </EditCommentProvider>
-                              </EditProvider>
-                            </SearchProvider>
-                          </RefreshCommentsProvider>
-                        </RefreshPostsProvider>
+                      <CreatePostProvider>
+                        <RefreshPostsProvider>
+                          <RefreshCommentsProvider>
+                              <SearchProvider>
+                                <EditProvider>
+                                  <EditCommentProvider>
+                                    <Routes>
+                                      <Route path="/" element={<Homepage />} />
+                                      <Route path="/gaming" element={<Gamingpage />} />
+                                      <Route path="/business" element={<Businesspage />} />
+                                      <Route path="/television" element={<Televisionpage />} />
+                                      <Route path=":page/:title/:id" element={<Postpage />} />
+                                      <Route path="/account" element={<Accountpage />} />
+                                    </Routes>
+                                  </EditCommentProvider>
+                                </EditProvider>
+                              </SearchProvider>
+                            </RefreshCommentsProvider>
+                          </RefreshPostsProvider>
+                        </CreatePostProvider>
                     </ResetPasswordProvider>
                   </SignUpProvider>
                 </LoginProvider>

@@ -1,37 +1,23 @@
 import React, {useState, useEffect, useContext} from "react";
 import { createPost } from "../../logic/post";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { auth } from "../../firebase";
+import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../contexts/RefreshPostsContext";
-import DisplayPosts from "./render-from-database/DisplayPosts";
+import { CreatePostContext } from "../../contexts/CreatePostContext";
 
 // When making a new page, you only need to change the function name and the page variable.
 const CreatePost = () => {
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
-    const [newPost, setPost] = useState(false);
+    const {newPost, setNewPost} = useContext(CreatePostContext);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          setIsAuthenticated(user !== null);
-        });
     
-        return () => unsubscribe();
-    }, []);
-
-    const handleNewPostClick = () => {
-        setPost(true);
-    }
-
     const onClose = () => {
         setTitle("");
         setContent("");
-        setPost(false);
+        setNewPost(false);
     }
 
     const handleTitleChange = (event) => {
@@ -67,7 +53,7 @@ const CreatePost = () => {
                     value={title}
                     onChange={handleTitleChange}
                     placeholder="Title..."
-                    maxLength={200}
+                    maxLength={50}
                     required
                     className="login-field"
                     />
@@ -76,7 +62,7 @@ const CreatePost = () => {
                     value={content}
                     onChange={handleContentChange}
                     placeholder="Content..."
-                    maxLength={1000}
+                    maxLength={200}
                     required
                     className="login-field"
                     />
@@ -89,10 +75,7 @@ const CreatePost = () => {
 
     return(
         <div>
-            {isAuthenticated && currentPage !== "home" ? 
-                <button onClick={handleNewPostClick}>New Post</button> : null}
             {newPost ? newPostForm() : null}
-            <DisplayPosts/>
         </div>
     )
 }

@@ -71,9 +71,7 @@ const Login = () => {
                 )}
                 {user && (
                     <>
-                    <button id="user" className="light-mode" onClick={handleAccountPage}>
-                        <img className="usericon" src={usericon} alt="User"></img>
-                    </button>
+                    <img className="usericon clickable" src={usericon} alt="User" onClick={handleAccountPage}></img>
                     <br />
                     <SignOut/>
                     </>
@@ -93,9 +91,7 @@ const Login = () => {
                 )}
                 {user && (
                     <>
-                    <button id="user" className="dark-mode" onClick={handleAccountPage}>
-                        <img className="usericon" src={usericon} alt="User"></img>
-                    </button>
+                    <img className="usericon clickable" src={usericon} alt="User" onClick={handleAccountPage}></img>
                     <br />
                     <SignOut/>
                     </>

@@ -6,6 +6,9 @@ import { CurrentPageContext } from "../../../contexts/CurrentPageContext";
 import { RefreshPostsContext } from "../../../contexts/RefreshPostsContext";
 import { UserContext } from "../../../contexts/UserContext";
 import { SearchContext } from "../../../contexts/SearchContext";
+import { CreatePostContext } from "../../../contexts/CreatePostContext";
+import { onAuthStateChanged } from "firebase/auth";
+import {auth} from "../../../firebase";
 
 const DisplayPosts = () => {
     const pageNames = ["gaming", "business", "television"]; // To go through all pages when on the home page
@@ -20,6 +23,20 @@ const DisplayPosts = () => {
     const {currentPage} = useContext(CurrentPageContext);
     const {refreshPosts, setRefresh} = useContext(RefreshPostsContext);
     const {search, setSearchTerm} = useContext(SearchContext);
+    const {setNewPost} = useContext(CreatePostContext);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          setIsAuthenticated(user !== null);
+        });
+    
+        return () => unsubscribe();
+    }, []);
+
+    const handleNewPostClick = () => {
+        setNewPost(true);
+    }
 
     const loadPosts = async () => {
       const fetchData = async () => {
@@ -243,21 +260,28 @@ const DisplayPosts = () => {
       }
 
     return(
-        <div>
+        <div className="main-content">
+            {isAuthenticated && currentPage !== "home" ? 
+              <div className="new-post-container container">
+                <button onClick={handleNewPostClick} className="new-post">New Post</button>
+                <p>
+                  Thanks for participating in my project!
+                </p>
+              </div> : null}
             {isLoading ? 
-              <p>Loading...</p>
+              <p className="filler-text">Loading...</p>
             : posts.length === 0 ? (
-                <p>Be the first to write a post...</p>
+                <p className="filler-text">Be the first to write a post...</p>
                 ) : (
-                <div>
-                    <div className="sort buttons">
+                <div className="display-posts">
+                    <div className="sort-buttons container">
                       <button onClick={() => setSortOption("top")}>Top</button>
                       <button onClick={() => setSortOption("new")}>New</button>
                       <button onClick={() => setSortOption("old")}>Old</button>
                     </div>
                     <ol className="post-list">
                     {posts.map((postItem) => (
-                        <li className="post-item" key={postItem.id}>
+                        <li className="post-item container" key={postItem.id}>
                             <h3 className="post post-title"
                             onClick={() => handleGoToPost(postItem.title, postItem.id, postItem.page)}
                             >{postItem.title}</h3>
@@ -270,12 +294,12 @@ const DisplayPosts = () => {
                                 <button className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                                 onClick={() => {
                                     handleLike(postItem.id, postItem.likes);
-                                }}>Like</button>
+                                }}>▲</button>
                                 {postItem.likes}
                                 <button className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                                 onClick={() => {
                                     handleDislike(postItem.id, postItem.likes);
-                                }}>Dislike</button>
+                                }}>▼</button>
                             </p>
                             {user && user.email === postItem.owner ? 
                                 <div className="post post-owner">

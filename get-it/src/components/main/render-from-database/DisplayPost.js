@@ -302,9 +302,9 @@ const DisplayPost = () => {
       }
     
       return (
-        <div>
+        <div className="main-content">
           { isLoading ? 
-              <p>Loading...</p>
+              <p className="filler-text">Loading...</p>
           : post ? (
             <div className="post-item">
               <h3 className="post-title">{post.title}</h3>
@@ -316,12 +316,12 @@ const DisplayPost = () => {
                 className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                 onClick={() => {
                     handleLike(id, post.likes);
-                }}>Like</button>
+                }}>▲</button>
                 {post.likes}
                 <button
                 className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                 onClick={() => { handleDislike(id, post.likes);}}
-                >Dislike</button>
+                >▼</button>
               </p>
               {user && user.email === post.owner ? 
                   <div className="post edit-delete">
@@ -363,14 +363,14 @@ const DisplayPost = () => {
                             className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                             onClick={() => {
                                 handleLike(id, comment.likes, comment.commentid);
-                            }}>Like
+                            }}>▲
                           </button>
                             {comment.likes}
                           <button
                             className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
                             onClick={() => {
                                 handleDislike(id, comment.likes, comment.commentid);
-                            }}>Dislike
+                            }}>▼
                           </button>
                           {user && user.email === comment.owner ? 
                             <div className="edit-delete">

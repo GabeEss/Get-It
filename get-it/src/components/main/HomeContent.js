@@ -1,3 +1,4 @@
+import "../../css/HomeContent.css";
 import React, {useEffect, useContext} from "react";
 import { LoginContext } from "../../contexts/LoginScreenContext";
 import { SignUpContext } from "../../contexts/SignUpScreenContext";
@@ -6,6 +7,7 @@ import { EditContext } from "../../contexts/EditPostContext";
 import { CurrentPageContext } from "../../contexts/CurrentPageContext";
 import { EditCommentContext } from "../../contexts/EditCommentContext";
 import { EditDisplayNameContext } from "../../contexts/EditDisplayNameContext";
+import { CreatePostContext } from "../../contexts/CreatePostContext";
 import { LightDarkContext } from "../../contexts/LightDarkContext.js";
 import SignIn from "./LoginContent";
 import SignUp from "./SignUpContent";
@@ -13,6 +15,7 @@ import PasswordReset from "./PasswordResetContent";
 import { EditPost, EditComment } from "./EditPost";
 import DisplayPost from "./render-from-database/DisplayPost";
 import CreatePost from "./CreatePost";
+import DisplayPosts from "./render-from-database/DisplayPosts";
 import AccountContent from "./AccountContent";
 import EditDisplayName from "./EditDisplayName";
 
@@ -23,6 +26,7 @@ const HomeContent = () => {
     const {edit} = useContext(EditContext); // if user clicked on the edit post or edit comment button
     const {editComment} = useContext(EditCommentContext);
     const {editDisplayName} = useContext(EditDisplayNameContext);
+    const {newPost} = useContext(CreatePostContext);
     const {currentPage, setCurrentPage} = useContext(CurrentPageContext);
     const {lightDark} = useContext(LightDarkContext);
 
@@ -43,13 +47,13 @@ const HomeContent = () => {
     const renderContent = () => {
         switch (currentPage) {
             case "business":
-                return <CreatePost/>
+                return <DisplayPosts/>
             case "gaming":
-                return <CreatePost/>
+                return <DisplayPosts/>
             case "television":
-                return <CreatePost/>
+                return <DisplayPosts/>
             case "home":
-                return <CreatePost/>
+                return <DisplayPosts/>
             case "post":
                 return <DisplayPost/>
             case "account":
@@ -87,7 +91,7 @@ const HomeContent = () => {
                     </>
                 ) : reset ? (
                     <>
-                    {lightDark ? 
+                    {!lightDark ? 
                         <div className="popup light-mode">
                             <PasswordReset />
                         </div> :
@@ -98,7 +102,7 @@ const HomeContent = () => {
                     </>
                 ) : edit ? ( 
                     <>
-                    {lightDark ? 
+                    {!lightDark ? 
                         <div className="popup light-mode">
                             <EditPost />
                         </div> :
@@ -109,7 +113,7 @@ const HomeContent = () => {
                     </>
                 ) : editComment ? (
                     <>
-                    {lightDark ? 
+                    {!lightDark ? 
                         <div className="popup light-mode">
                             <EditComment />
                         </div> :
@@ -120,12 +124,23 @@ const HomeContent = () => {
                     </>
                 ) : editDisplayName ? (
                     <>
-                    {lightDark ? 
+                    {!lightDark ? 
                         <div className="popup light-mode">
                             <EditDisplayName />
                         </div> :
                         <div className="popup dark-mode">
                             <EditDisplayName />
+                        </div>
+                    }
+                    </>
+                ) : newPost ? (
+                    <>
+                    {!lightDark ? 
+                        <div className="popup light-mode">
+                            <CreatePost />
+                        </div> :
+                        <div className="popup dark-mode">
+                            <CreatePost />
                         </div>
                     }
                     </>

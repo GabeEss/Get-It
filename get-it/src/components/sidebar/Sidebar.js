@@ -49,14 +49,14 @@ const Sidebar = () => {
         // Check if the path contains at least two segments
         if (segments.length >= 3) {
             // Returns everything except the postId at the end of the path and also replaces %20 with spaces
-            return segments[0] + '/' + segments[1] + '/' + segments[2].replace(/%20/g, ' ');
+            return segments[0] + '/' + segments[1] + '/' + segments[2].charAt(0);
         } else {
             return path; // Return the path as it is if it contains fewer than three segments
         }
     }
 
     return(
-        <div className="sidebar-container">
+        <div className="sidebar-container container">
             <div className="feeds">
                 <h3 className="sidebar-header">Feeds</h3>
                 <div className="sidebar-topic clickable" onClick={handleHome}>Home</div>

@@ -15,6 +15,24 @@ body {
     bottom: 0;
     left: 0;
     overflow-y: scroll;
+    display: grid;
+    grid-template-rows: auto 1fr; /* Auto for header height, 1fr for the rest */
+    grid-template-columns: auto 1fr; /* Auto for sidebar width, 1fr for main content */
+}
+
+.header {
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
+}
+
+.sidebar-container {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+
+.home-main {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
 }
 
 .light-mode {
@@ -25,6 +43,11 @@ body {
 .light-mode .container {
     background-color:#ffffff;
     color: #333333;
+    border: 1px solid #cccccc; /* Add a 1px solid border with a light gray color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for a 3D effect */
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .light-mode h1 {
@@ -43,13 +66,8 @@ body {
     color: #000000;
 }
 
-.light-mode button {
-    background-color: rgb(0, 98, 255);
-    color: white;
-}
-
-.light-mode button:hover {
-    background-color: rgba(0, 98, 255, 0.8);
+.light-mode .clickable:hover {
+    background-color: rgba(51, 51, 51, 0.2);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -61,6 +79,11 @@ body {
 .dark-mode .container {
     background-color:#333333;
     color:#ffffff;
+    border: 1px solid #cccccc; /* Add a 1px solid border with a light gray color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box-shadow for a 3D effect */
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .dark-mode h1 {
@@ -79,13 +102,8 @@ body {
     color: #cccccc;
 }
 
-.dark-mode button {
-    background-color: rgb(255, 81, 0);
-    color: black;
-}
-
-.dark-mode button:hover {
-    background-color: rgb(255, 81, 0);
+.dark-mode .clickable:hover {
+    background-color: rgba(51, 51, 51, 0.2);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -145,7 +163,7 @@ body {
 }
 
 .light-mode .popup-container button:hover {
-    background-color: rgba(0, 98, 255, 0.8);
+    background-color: rgba(0, 98, 255);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 

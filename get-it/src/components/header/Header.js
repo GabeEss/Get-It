@@ -20,7 +20,7 @@ const Header = () => {
                 <div className="header container light-mode">
                     <div className="logo-container" onClick={handleGoHome}>
                         <img className="logo" src={logo} alt=""></img>
-                        <div id="app-name">Get It</div>
+                        <div id="app-name" className="clickable">Get It</div>
                     </div>
                     <Searchbar/>
                     <Login/>
@@ -28,7 +28,7 @@ const Header = () => {
                 <div className="header container dark-mode">
                     <div className="logo-container" onClick={handleGoHome}>
                         <img className="logo" src={logo} alt=""></img>
-                        <div id="app-name">Get It</div>
+                        <div id="app-name" className="clickable">Get It</div>
                     </div>
                     <Searchbar/>
                     <Login/>
