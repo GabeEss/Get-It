@@ -48,16 +48,63 @@
     margin: 0;
 }
 
-.post-likes {
-    display: flex;
-    flex-direction: column;
-    width: 30px;
-    align-items: center;
+.post-title:hover {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .post-item {
     max-width: 700px; /* Default max-width for the post-item */
     width: 100%; /* Ensure the item takes the full available width initially */
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.post-item:hover {
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+  }
+
+.post-content {
+    /* Add word-wrap and break-word properties to enable wrapping */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  
+    /* Add margin and padding for spacing and appearance */
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+
+.likes-and-title {
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+}
+
+.post-likes {
+    display: flex;
+    flex-direction: column;
+    width: 30px;
+    align-items: center;
+    padding-right: 10px;
+}
+
+.post-likes button {
+    border-style: none;
+    outline-style: none;
+}
+
+.post-likes button:hover {
+    color: orange;
+}
+
+.post-owner {
+    display: flex;
+    gap: 10px;
+}
+
+.post-owner button {
+    border-style: none;
+    outline-style: none;
+    padding: 10px;
 }
 
 /* Add a media query for smaller screens */
@@ -71,14 +118,6 @@
       grid-column: auto;
     }
   }
-
-.content-container {
-
-}
-
-.light-mode .main-content button {
-
-}
 
 .light-mode .main-content button:hover {
     background-color: rgba(51, 51, 51, 0.2);

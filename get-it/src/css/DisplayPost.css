@@ -1,0 +1,63 @@
+.goback-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: end;
+}
+
+.goback-container button {
+    border-style: none;
+    outline-style: none;
+    padding: 10px;
+}
+
+.goback-comments {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.comment-textarea {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.comment-area button {
+    
+}
+
+#addcommentbutton {
+    margin-top: 10px;
+    border-style: none;
+    outline-style: none;
+    padding: 10px;
+}
+
+.time-likes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.comment-likes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.comment-likes-container button{
+    border-style: none;
+    outline-style: none;
+}
+
+.comment-likes-container button:hover{
+    color: orange;
+}
+
+.content{
+    padding:10px;
+}

@@ -282,25 +282,31 @@ const DisplayPosts = () => {
                     <ol className="post-list">
                     {posts.map((postItem) => (
                         <li className="post-item container" key={postItem.id}>
-                            <h3 className="post post-title"
-                            onClick={() => handleGoToPost(postItem.title, postItem.id, postItem.page)}
-                            >{postItem.title}</h3>
-                            <h5 className="post post-name">Original poster: {postItem.nickname}</h5>
-                            <h5 className="post post-time">
-                                Time of post in UTC: {formatTime(postItem.time)}
-                            </h5>
-                            {<p className="post post-content">{postItem.content}</p>}
-                            <p className="post post-likes">
-                                <button className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                                onClick={() => {
-                                    handleLike(postItem.id, postItem.likes);
-                                }}>▲</button>
-                                {postItem.likes}
-                                <button className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
-                                onClick={() => {
-                                    handleDislike(postItem.id, postItem.likes);
-                                }}>▼</button>
-                            </p>
+                          <div className="likes-and-title">
+                              <h3 className="post post-title"
+                              onClick={() => handleGoToPost(postItem.title, postItem.id, postItem.page)}
+                              >{postItem.title}</h3>
+                              <div className="like-container">
+                                  <p className="post post-likes">
+                                    <button className={`likebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                                    onClick={() => {
+                                        handleLike(postItem.id, postItem.likes);
+                                    }}>▲</button>
+                                    {postItem.likes}
+                                    <button className={`dislikebutton ${noClick ? "disabled" : !user ? "disabled" : ""}`}
+                                    onClick={() => {
+                                        handleDislike(postItem.id, postItem.likes);
+                                    }}>▼</button>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="name-time-content">
+                              <h5 className="post post-name">Original poster: {postItem.nickname}</h5>
+                              <h5 className="post post-time">
+                                  Time of post in UTC: {formatTime(postItem.time)}
+                              </h5>
+                              {<p className="post post-content">{postItem.content}</p>}
+                            </div>
                             {user && user.email === postItem.owner ? 
                                 <div className="post post-owner">
                                 <button className={`editbutton ${user.email === postItem.owner ? "" : "disabled"}`}

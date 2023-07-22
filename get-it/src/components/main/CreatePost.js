@@ -53,14 +53,16 @@ const CreatePost = () => {
                     value={title}
                     onChange={handleTitleChange}
                     placeholder="Title..."
-                    maxLength={50}
+                    maxLength={25}
                     required
                     className="login-field"
                     />
-                    <input
+                    <textarea
                     type="textarea"
                     value={content}
                     onChange={handleContentChange}
+                    rows={10}
+                    cols={18}
                     placeholder="Content..."
                     maxLength={200}
                     required
